@@ -1,24 +1,24 @@
-<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
-    <plugin-info>
-        <description>${project.description}</description>
-        <version>${project.version}</version>
-        <vendor name="${project.organization.name}" url="${project.organization.url}" />
-        <param name="plugin-icon">images/pluginIcon.png</param>
-        <param name="plugin-logo">images/pluginLogo.png</param>
-    </plugin-info>
+<?xml version="1.0" encoding="UTF-8"?>
 
-    <!-- add our i18n resource -->
-    <resource type="i18n" name="i18n" location="bamboo-colony-plugin"/>
-    
-    <!-- add our web resources -->
-    <web-resource key="bamboo-colony-plugin-resources" name="bamboo-colony-plugin Web Resources">
-        <dependency>com.atlassian.auiplugin:ajs</dependency>
-        
-        <resource type="download" name="bamboo-colony-plugin.css" location="/css/bamboo-colony-plugin.css"/>
-        <resource type="download" name="bamboo-colony-plugin.js" location="/js/bamboo-colony-plugin.js"/>
-        <resource type="download" name="images/" location="/images"/>
-
-        <context>bamboo-colony-plugin</context>
-    </web-resource>
-    
+<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2"> 
+  <plugin-info> 
+    <description>${project.description}</description>  
+    <version>${project.version}</version>  
+    <vendor name="${project.organization.name}" url="${project.organization.url}"/>  
+    <param name="plugin-icon">images/pluginIcon.png</param>  
+    <param name="plugin-logo">images/pluginLogo.png</param> 
+  </plugin-info>  
+  <!-- add our i18n resource -->  
+  <resource type="i18n" name="i18n" location="bamboo-colony-plugin"/>  
+  <!-- add our web resources -->  
+  <web-resource key="bamboo-colony-plugin-resources" name="bamboo-colony-plugin Web Resources"> 
+    <dependency>com.atlassian.auiplugin:ajs</dependency>  
+    <resource type="download" name="bamboo-colony-plugin.css" location="/css/bamboo-colony-plugin.css"/>  
+    <resource type="download" name="bamboo-colony-plugin.js" location="/js/bamboo-colony-plugin.js"/>  
+    <resource type="download" name="images/" location="/images"/>  
+    <context>bamboo-colony-plugin</context> 
+  </web-resource>  
+  <servlet key="Colony Admin Servlet" class="com.atlassian.plugins.quali.colony.adminui.AdminServlet"> 
+    <url-pattern>/colony/admin</url-pattern> 
+  </servlet>
 </atlassian-plugin>
