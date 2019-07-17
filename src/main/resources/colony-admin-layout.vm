@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <title>${i18n.getText("colony-admin.label")}</title>
+    <meta name="decorator" content="atl.admin">
+  </head>
+  <body>
+    <form id="admin" class="aui" method="POST">
+
+    <div class="field-group">
+            <label for="name">${i18n.getText("colony-admin.address")}</label>
+            <input type="text" id="address" name="address" class="text" value="${address}">
+            <br />
+            <span>${i18n.getText("colony-admin.address.details")}</span>
+            <span class="errorText">${address_error}</span>
+    </div>
+
+    <div class="field-group">
+            <label for="name">${i18n.getText("colony-admin.port")}</label>
+            <input type="text" id="port" name="port" class="text" value="${port}">
+            <br />
+            <span class="errorText">${port_error}</span>
+    </div>
+
+    <div class="field-group">
+            <label for="name">${i18n.getText("colony-admin.token")}</label>
+            <input type="text" id="token" name="token" class="text" value="${token}">
+            <br />
+            <span class="errorText">${token_error}</span>
+    </div>
+        
+        <div class="field-group">
+            <span class="errorText">${general_error}</span>
+            <span class="log-viewer-green">${general_msg}</span>
+        </div>
+
+     <div class="field-group">
+        <input type="submit" value="Test Connection & Save" class="button">
+      </div>
+    </form>
+  </body>
+</html>
