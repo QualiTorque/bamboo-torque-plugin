@@ -3,12 +3,14 @@ package com.atlassian.plugins.quali.colony.adminui;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.plugins.quali.colony.service.SandboxServiceConnection;
+import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
+import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
-
+import java.net.URI;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -33,20 +35,35 @@ public class AdminServlet extends HttpServlet
     private final PluginSettingsFactory pluginSettingsFactory;
     @ComponentImport
     private final TemplateRenderer renderer;
+    @ComponentImport
+    private final LoginUriProvider loginUriProvider;
+    @ComponentImport
+    private final UserManager userManager;
 
     private static final long serialVersionUID = 1L;
 
     @Inject
     public AdminServlet(PluginSettingsFactory pluginSettingsFactory, TemplateRenderer renderer,
-                        TransactionTemplate transactionTemplate) {
+                        TransactionTemplate transactionTemplate, LoginUriProvider loginUriProvider,
+                        UserManager userManager) {
         this.pluginSettingsFactory = pluginSettingsFactory;
         this.renderer = renderer;
         this.transactionTemplate = transactionTemplate;
+        this.loginUriProvider = loginUriProvider;
+        this.userManager = userManager;
+
     }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
     {
+        String username = userManager.getRemoteUsername(request);
+        if (username == null || !userManager.isSystemAdmin(username))
+        {
+            redirectToLogin(request, response);
+            return;
+        }
+
         Map<String, Object> context = new HashMap<String, Object>();
         response.setContentType("text/html;charset=utf-8");
 
@@ -71,6 +88,22 @@ public class AdminServlet extends HttpServlet
         renderer.render(Const.CS_ADMIN_LAYOUT, context, response.getWriter());
     }
 
+    private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException
+    {
+        response.sendRedirect(loginUriProvider.getLoginUri(getUri(request)).toASCIIString());
+    }
+
+    private URI getUri(HttpServletRequest request)
+    {
+        StringBuffer builder = request.getRequestURL();
+        if (request.getQueryString() != null)
+        {
+            builder.append("?");
+            builder.append(request.getQueryString());
+        }
+        return URI.create(builder.toString());
+    }
+
     @Override
     public void doPost(final HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
@@ -79,9 +112,9 @@ public class AdminServlet extends HttpServlet
 
         String address = req.getParameter(Const.ADDRESS).trim();
         String token = req.getParameter(Const.TOKEN).trim();
-        int port = Integer.parseInt(req.getParameter(Const.CS_PORT));
+        String port = req.getParameter(Const.CS_PORT).trim();
 
-        SandboxServiceConnection apiConnection = new SandboxServiceConnection(address, port, token,
+        SandboxServiceConnection apiConnection = new SandboxServiceConnection(address, Integer.parseInt(port), token,
                 10,30);
 
 
@@ -116,6 +149,7 @@ public class AdminServlet extends HttpServlet
 
         context.put(Const.CS_TOKEN_ERROR, "");
         context.put(Const.ADDRESS_ERROR, "");
+        context.put(Const.CS_PORT_ERROR, "");
 
         context.put(Const.ADDRESS, address);
         context.put(Const.CS_PORT, port);
