@@ -23,7 +23,7 @@
 
     <div class="field-group">
             <label for="name">${i18n.getText("colony-admin.token")}</label>
-            <input type="text" id="token" name="token" class="text" value="${token}">
+            <input type="password" id="token" name="token" class="text" value="${token}">
             <br />
             <span class="errorText">${token_error}</span>
     </div>
