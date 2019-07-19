@@ -32,4 +32,14 @@
       <label key="colony-settings-page.name"></label>
       <link linkId="colony-settings-page-link">/plugins/servlet/colony/admin</link>
   </web-item>
+  <taskType name="Colony Start Sandbox" class="com.atlassian.plugins.quali.colony.tasks.StartSandboxTask" key="test">
+    <description>Start Sandbox Task</description>
+    <!-- Categories available in 3.1: "builder", "test" and "deployment"
+    <category name=""/>
+    -->
+    <configuration class="com.atlassian.plugins.quali.colony.tasks.StartSandboxTaskConfigurator"/>
+    <resource type="freemarker" name="edit" location="templates/editStartSandBoxTask.ftl"/>
+    <resource type="download" name="icon" location="images/colony-icon.png"/>
+  </taskType>
+
 </atlassian-plugin>

@@ -1,0 +1,5 @@
+[@ww.textfield labelKey="startsandbox.space" name="space" required='true'/]
+[@ww.textfield labelKey="startsandbox.blueprint" name="blueprint" required='true'/]
+[@ww.textfield labelKey="startsandbox.sandboxname" name="sandboxname" required='true'/]
+[@ww.textfield labelKey="startsandbox.artifacts" name="artifacts" required='false'/]
+[@ww.textfield labelKey="startsandbox.inputs" name="inputs" required='false'/]
