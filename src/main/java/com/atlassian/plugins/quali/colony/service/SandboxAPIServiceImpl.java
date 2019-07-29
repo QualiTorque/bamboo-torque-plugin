@@ -25,7 +25,7 @@ public class SandboxAPIServiceImpl implements SandboxAPIService{
         builder.readTimeout(connection.readTimeoutSec, TimeUnit.SECONDS);
         OkHttpClient client= builder.build();
 
-        String baseUrl = String.format("http://%1$s:%2$s",connection.address,connection.port);
+        String baseUrl = String.format("%1$s",connection.address);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create(gson))

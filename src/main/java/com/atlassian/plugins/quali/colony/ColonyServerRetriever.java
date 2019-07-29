@@ -15,6 +15,6 @@ public class ColonyServerRetriever {
         String port = (String) pluginSettings.get(AdminServlet.Config.class.getName() + '.' + Const.CS_PORT);
         String token = (String) pluginSettings.get(AdminServlet.Config.class.getName() + '.' + Const.TOKEN);
 
-        return new SandboxServiceConnection(address, Integer.parseInt(port), token, 30,30);
+        return new SandboxServiceConnection(address, token, 30,30);
     }
 }

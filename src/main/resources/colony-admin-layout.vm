@@ -15,13 +15,6 @@
     </div>
 
     <div class="field-group">
-            <label for="name">${i18n.getText("colony-admin.port")}</label>
-            <input type="text" id="port" name="port" class="text" value="${port}">
-            <br />
-            <span class="errorText">${port_error}</span>
-    </div>
-
-    <div class="field-group">
             <label for="name">${i18n.getText("colony-admin.token")}</label>
             <input type="password" id="token" name="token" class="text" value="${token}">
             <br />

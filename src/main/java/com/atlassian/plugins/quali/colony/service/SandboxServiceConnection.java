@@ -5,12 +5,10 @@ package com.atlassian.plugins.quali.colony.service;
  */
 public class SandboxServiceConnection {
     public final String address;
-    public final int port;
     public final String token;
     public final int connectionTimeoutSec;
     public final int readTimeoutSec;
-    public SandboxServiceConnection(String serverAddress, int port, String token, int connectionTimeoutSec, int readTimeoutSec){
-        this.port = port;
+    public SandboxServiceConnection(String serverAddress, String token, int connectionTimeoutSec, int readTimeoutSec){
         this.address= serverAddress;
         this.token = token;
         this.connectionTimeoutSec = connectionTimeoutSec;

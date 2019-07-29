@@ -70,14 +70,10 @@ public class AdminServlet extends HttpServlet
         PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
 
         String address = getConfigKey(pluginSettings, Const.ADDRESS);
-        String port = getConfigKey(pluginSettings, Const.CS_PORT);
         String token = getConfigKey(pluginSettings, Const.TOKEN);
 
         ValidateKey(context, address, Const.ADDRESS, Const.ADDRESS_ERROR,
                 "Please set a CloudShell Colony server Address");
-
-        ValidateKey(context, port, Const.CS_PORT, Const.CS_PORT_ERROR,
-                "Please set a CloudShell Colony port");
 
         ValidateKey(context, token, Const.TOKEN, Const.CS_TOKEN_ERROR,
                 "Please set a CloudShell Colony token");
@@ -112,9 +108,8 @@ public class AdminServlet extends HttpServlet
 
         String address = req.getParameter(Const.ADDRESS).trim();
         String token = req.getParameter(Const.TOKEN).trim();
-        String port = req.getParameter(Const.CS_PORT).trim();
 
-        SandboxServiceConnection apiConnection = new SandboxServiceConnection(address, Integer.parseInt(port), token,
+        SandboxServiceConnection apiConnection = new SandboxServiceConnection(address, token,
                 10,30);
 
 
@@ -134,7 +129,6 @@ public class AdminServlet extends HttpServlet
                 public Object doInTransaction() {
                     PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
                     pluginSettings.put(Config.class.getName() + '.' + Const.ADDRESS, req.getParameter(Const.ADDRESS).trim());
-                    pluginSettings.put(Config.class.getName() + '.' + Const.CS_PORT, req.getParameter(Const.CS_PORT).trim());
                     pluginSettings.put(Config.class.getName() + '.' + Const.TOKEN, req.getParameter(Const.TOKEN).trim());
                     return null;
                 }
@@ -152,7 +146,6 @@ public class AdminServlet extends HttpServlet
         context.put(Const.CS_PORT_ERROR, "");
 
         context.put(Const.ADDRESS, address);
-        context.put(Const.CS_PORT, port);
         context.put(Const.TOKEN, token);
 
         renderer.render(Const.CS_ADMIN_LAYOUT, context, resp.getWriter());
