@@ -16,12 +16,12 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 
 import java.util.Map;
 
-public class StopSandboxTask implements TaskType
+public class EndSandboxTask implements TaskType
 {
     @ComponentImport
     private final PluginSettingsFactory pluginSettingsFactory;
 
-    public StopSandboxTask(PluginSettingsFactory pluginSettingsFactory){
+    public EndSandboxTask(PluginSettingsFactory pluginSettingsFactory){
         this.pluginSettingsFactory = pluginSettingsFactory;
     }
 
@@ -37,7 +37,7 @@ public class StopSandboxTask implements TaskType
         final ResponseData<Void> res;
         final String spaceName = taskContext.getConfigurationMap().get("space");
         final String sandboxId = taskContext.getBuildContext().getBuildResult().getCustomBuildData().get("SANDBOX_ID");
-        buildLogger.addBuildLogEntry("Task Stop Sandbox started");
+        buildLogger.addBuildLogEntry("Task End Sandbox started");
         buildLogger.addBuildLogEntry(String.format("Sandbox id is %s", sandboxId));
         SandboxAPIService sandboxAPIService = createAPIService();
         try {

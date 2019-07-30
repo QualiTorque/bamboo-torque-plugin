@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class StopSandboxTaskConfigurator extends AbstractTaskConfigurator
+public class EndSandboxTaskConfigurator extends AbstractTaskConfigurator
 {
     private TextProvider textProvider;
 
@@ -37,12 +37,14 @@ public class StopSandboxTaskConfigurator extends AbstractTaskConfigurator
     public void populateContextForEdit(@NotNull final Map<String, Object> context, @NotNull final TaskDefinition taskDefinition)
     {
         super.populateContextForEdit(context, taskDefinition);
+        context.put("space", taskDefinition.getConfiguration().get("space"));
     }
 
     @Override
     public void populateContextForView(@NotNull final Map<String, Object> context, @NotNull final TaskDefinition taskDefinition)
     {
         super.populateContextForView(context, taskDefinition);
+        context.put("space", taskDefinition.getConfiguration().get("space"));
     }
 
     @Override
@@ -50,8 +52,8 @@ public class StopSandboxTaskConfigurator extends AbstractTaskConfigurator
     {
         super.validate(params, errorCollection);
 
-        final String sayValue = params.getString("space");
-        if (StringUtils.isEmpty(sayValue))
+        final String spaceName = params.getString("space");
+        if (StringUtils.isEmpty(spaceName))
         {
             errorCollection.addError("space", textProvider.getText("startsandbox.space.error"));
         }

@@ -10,11 +10,16 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+
+// TODO: add processing and validation for artifacts and inputs (key1=value1, ...)
 
 public class StartSandboxTaskConfigurator extends AbstractTaskConfigurator
 {
     private TextProvider textProvider;
+    private List<String> keys = Arrays.asList("space", "blueprint", "sandboxname", "artifacts", "inputs");
 
     @NotNull
     @Override
@@ -22,12 +27,9 @@ public class StartSandboxTaskConfigurator extends AbstractTaskConfigurator
     {
         final Map<String, String> config = super.generateTaskConfigMap(params, previousTaskDefinition);
 
-        config.put("space", params.getString("space"));
-        config.put("blueprint", params.getString("blueprint"));
-        config.put("sandboxname", params.getString("sandboxname"));
-        config.put("artifacts", params.getString("artifacts"));
-        config.put("inputs", params.getString("inputs"));
-
+        for (String key: keys) {
+            config.put(key, params.getString(key));
+        }
         return config;
     }
 
@@ -35,23 +37,24 @@ public class StartSandboxTaskConfigurator extends AbstractTaskConfigurator
     public void populateContextForCreate(@NotNull final Map<String, Object> context)
     {
         super.populateContextForCreate(context);
-
-       // context.put("say", "Hello, World!");
     }
 
     @Override
     public void populateContextForEdit(@NotNull final Map<String, Object> context, @NotNull final TaskDefinition taskDefinition)
     {
         super.populateContextForEdit(context, taskDefinition);
-
-     //   context.put("say", taskDefinition.getConfiguration().get("say"));
+        for (String key: keys) {
+            context.put(key, taskDefinition.getConfiguration().get(key));
+        }
     }
 
     @Override
     public void populateContextForView(@NotNull final Map<String, Object> context, @NotNull final TaskDefinition taskDefinition)
     {
         super.populateContextForView(context, taskDefinition);
-//        context.put("say", taskDefinition.getConfiguration().get("say"));
+        for (String key: keys) {
+            context.put(key, taskDefinition.getConfiguration().get(key));
+        }
     }
 
     @Override

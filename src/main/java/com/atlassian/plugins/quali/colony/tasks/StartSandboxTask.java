@@ -25,15 +25,14 @@ public class StartSandboxTask implements TaskType
     @ComponentImport
     private final PluginSettingsFactory pluginSettingsFactory;
 
-    private String spaceName;
-    private String blueprint;
-    private String sandboxName;
-    private Map<String, String> artifacts;
-    private Map<String, String> inputs;
+////    private String spaceName;
+//    private String blueprint;
+//    private String sandboxName;
+//    private Map<String, String> artifacts;
+//    private Map<String, String> inputs;
 
     public StartSandboxTask(PluginSettingsFactory pluginSettingsFactory){
         this.pluginSettingsFactory = pluginSettingsFactory;
-
     }
 
     private SandboxAPIService createAPIService() {
@@ -45,7 +44,8 @@ public class StartSandboxTask implements TaskType
     public TaskResult execute(final TaskContext taskContext) throws TaskException {
         final BuildLogger buildLogger = taskContext.getBuildLogger();
         final ResponseData<CreateSandboxResponse> res;
-        buildLogger.addBuildLogEntry("Task started");
+        final Map<String, String> customBuildData = taskContext.getBuildContext().getBuildResult().getCustomBuildData();
+        buildLogger.addBuildLogEntry("Task Start Sandbox started");
         final String spaceName = taskContext.getConfigurationMap().get("space");
         final String blueprintName = taskContext.getConfigurationMap().get("blueprint");
         final String sandboxName = taskContext.getConfigurationMap().get("sandboxname");
@@ -67,7 +67,8 @@ public class StartSandboxTask implements TaskType
 
         //final String say = taskContext.getConfigurationMap().get("say");
 
-        buildLogger.addBuildLogEntry(String.format("Sandbox %s started successfully", sandboxId));
+        buildLogger.addBuildLogEntry(String.format("Sandbox with id %s started successfully", sandboxId));
+        customBuildData.put("SANDBOX_ID", sandboxId);
 
         return TaskResultBuilder.create(taskContext).success().build();
     }
