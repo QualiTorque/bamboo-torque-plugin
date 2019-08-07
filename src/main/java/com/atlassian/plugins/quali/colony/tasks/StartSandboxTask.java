@@ -17,7 +17,7 @@ import com.atlassian.plugins.quali.colony.service.SandboxAPIServiceImpl;
 import com.atlassian.plugins.quali.colony.service.SandboxServiceConnection;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 public class StartSandboxTask implements TaskType
@@ -40,6 +40,16 @@ public class StartSandboxTask implements TaskType
         return new SandboxAPIServiceImpl(serviceConnection);
     }
 
+    public static Map<String,String> parseParametersLine(String params) {
+        HashMap<String, String> holder = new HashMap<>();
+        String[] keyVals = params.split(", ");
+        for (String keyVal : keyVals) {
+            String[] parts = keyVal.split("=", 2);
+            holder.put(parts[0], parts[1]);
+        }
+        return holder;
+    }
+
     @Override
     public TaskResult execute(final TaskContext taskContext) throws TaskException {
         final BuildLogger buildLogger = taskContext.getBuildLogger();
@@ -49,10 +59,12 @@ public class StartSandboxTask implements TaskType
         final String spaceName = taskContext.getConfigurationMap().get("space");
         final String blueprintName = taskContext.getConfigurationMap().get("blueprint");
         final String sandboxName = taskContext.getConfigurationMap().get("sandboxname");
+        final Map<String, String> artifacts = parseParametersLine(taskContext.getConfigurationMap().get("artifacts"));
+        final Map<String, String> inputs = parseParametersLine(taskContext.getConfigurationMap().get("inputs"));
+
         SandboxAPIService sandboxAPIService = createAPIService();
         buildLogger.addBuildLogEntry(String.format("Passed parameters are %s , %s , %s", spaceName, blueprintName, sandboxName));
-        CreateSandboxRequest req = new CreateSandboxRequest(blueprintName,sandboxName, Collections.<String, String>emptyMap(),
-                true, Collections.<String, String>emptyMap());
+        CreateSandboxRequest req = new CreateSandboxRequest(blueprintName, sandboxName, artifacts, true, inputs);
         try {
             res = sandboxAPIService.createSandbox(spaceName, req);
         }

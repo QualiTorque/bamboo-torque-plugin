@@ -37,8 +37,6 @@ public class EndSandboxTask implements TaskType
         final ResponseData<Void> res;
         final String spaceName = taskContext.getConfigurationMap().get("space");
         final String sandboxId = taskContext.getBuildContext().getBuildResult().getCustomBuildData().get("SANDBOX_ID");
-        buildLogger.addBuildLogEntry("Task End Sandbox started");
-        buildLogger.addBuildLogEntry(String.format("Sandbox id is %s", sandboxId));
         SandboxAPIService sandboxAPIService = createAPIService();
         try {
             res = sandboxAPIService.deleteSandbox(spaceName, sandboxId);
