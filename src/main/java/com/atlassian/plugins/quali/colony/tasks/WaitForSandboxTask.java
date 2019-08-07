@@ -6,6 +6,10 @@ import com.atlassian.bamboo.task.TaskException;
 import com.atlassian.bamboo.task.TaskResult;
 import com.atlassian.bamboo.task.TaskResultBuilder;
 import com.atlassian.bamboo.task.TaskType;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.plugins.quali.colony.ColonyServerRetriever;
 import com.atlassian.plugins.quali.colony.api.*;
@@ -14,11 +18,19 @@ import com.atlassian.plugins.quali.colony.service.SandboxAPIServiceImpl;
 import com.atlassian.plugins.quali.colony.service.SandboxServiceConnection;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.google.gson.Gson;
+import com.atlassian.bamboo.variable.CustomVariableContext;
+import com.atlassian.bamboo.variable.substitutor.VariableSubstitutorFactory;
+import com.atlassian.bamboo.variable.VariableContext;
+import com.atlassian.bamboo.variable.VariableDefinitionContext;
+import org.apache.commons.lang.StringUtils;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
+import java.io.IOException;
 import java.util.concurrent.TimeoutException;
+import org.json.*;
 
+@Scanned
 public class WaitForSandboxTask implements TaskType{
     @ComponentImport
     private final PluginSettingsFactory pluginSettingsFactory;
@@ -26,9 +38,14 @@ public class WaitForSandboxTask implements TaskType{
     private SandboxAPIService sandboxAPIService;
     private String prevStatus = "";
 
-    public WaitForSandboxTask(PluginSettingsFactory pluginSettingsFactory) {
+    @ComponentImport
+    private CustomVariableContext customVariableContext;
+
+    public WaitForSandboxTask(@ComponentImport PluginSettingsFactory pluginSettingsFactory,
+                              @ComponentImport CustomVariableContext customVariableContext) {
         this.pluginSettingsFactory = pluginSettingsFactory;
         this.sandboxAPIService = createAPIService();
+        this.customVariableContext = customVariableContext;
     }
 
     private SandboxAPIService createAPIService() {
@@ -39,16 +56,22 @@ public class WaitForSandboxTask implements TaskType{
     @Override
     public TaskResult execute(final TaskContext taskContext) throws TaskException {
         final BuildLogger buildLogger = taskContext.getBuildLogger();
+        String jsonRes = "{}";
         buildLogger.addBuildLogEntry("Task Wait for Sandbox started");
         final String spaceName = taskContext.getConfigurationMap().get("space");
+//        final String sandboxId =  "endoyse16u00z4"; //taskContext.getBuildContext().getBuildResult().getCustomBuildData().get("SANDBOX_ID");
         final String sandboxId = taskContext.getBuildContext().getBuildResult().getCustomBuildData().get("SANDBOX_ID");
         final int timeout = Integer.parseInt(taskContext.getConfigurationMap().get("timeout"));
         buildLogger.addBuildLogEntry(String.format("Waiting for sandbox %s, time limit is %s minutes", sandboxId, timeout));
         try {
-            String jsonRes = waitForSandbox(spaceName, sandboxId, timeout, buildLogger);
+            jsonRes = waitForSandbox(spaceName, sandboxId, timeout, buildLogger);
             buildLogger.addBuildLogEntry(jsonRes);
         } catch (Exception e) {
             throw new TaskException(String.format("Unable to complete a task. Details:\n%s", e.getMessage()));
+        }
+        ArrayList<String> endpoints = getSandboxEndpoints(jsonRes);
+        for (int i=0; i < endpoints.size(); i++) {
+            setVariable(taskContext, String.format("endpoint%d", i), endpoints.get(i));
         }
         return TaskResultBuilder.newBuilder(taskContext).success().build();
     }
@@ -105,6 +128,21 @@ public class WaitForSandboxTask implements TaskType{
                 sandbox.id, sandbox.sandboxStatus));
     }
 
+    private ArrayList<String> getSandboxEndpoints(String jsonDef) {
+        ArrayList<String> endpoints = new ArrayList<String>();
+        JSONObject sbDef = new JSONObject(jsonDef);
+        JSONArray apps =  sbDef.getJSONArray("applications");
+        for (int i = 0; i < apps.length(); i++)
+        {
+            JSONArray links = apps.getJSONObject(i).getJSONArray("shortcuts");
+            for (int j = 0; j < links.length(); j++)
+            {
+                endpoints.add(links.getString(j));
+            }
+        }
+        return endpoints;
+    }
+
     private String formatAppsDeploymentStatuses(SingleSandbox sandbox)throws IOException{
         StringBuilder builder = new StringBuilder();
         boolean isFirst = true;
@@ -128,5 +166,28 @@ public class WaitForSandboxTask implements TaskType{
             }
         }
         return builder.toString();
+    }
+    private void setVariable(TaskContext taskContext, String key, String value)
+    {
+        final BuildLogger buildLogger = taskContext.getBuildLogger();
+        final VariableContext variableContext = taskContext.getBuildContext().getVariableContext();
+        final Map<String, VariableDefinitionContext> definitions = variableContext.getDefinitions();
+
+        final VariableDefinitionContext definition = definitions.get(key);
+        if (definition != null)
+        {
+            if (StringUtils.isEmpty(definition.getValue()))
+            {
+                definition.setValue(value);
+                buildLogger.addBuildLogEntry(String.format("Set variable %s=%s", key, value));
+            }
+            else
+            {
+                buildLogger.addBuildLogEntry(String.format("Not setting variable '%s' because it is already set", key));
+            }
+            return;
+        }
+        customVariableContext.addCustomData(key, value);
+        buildLogger.addBuildLogEntry(String.format("Set custom variable %s=%s", key, value));
     }
 }
