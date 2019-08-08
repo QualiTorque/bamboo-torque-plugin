@@ -38,7 +38,7 @@ After installation you will have three tasks added to the task list available in
 - End Colony Sandbox Task
 ![Alt text](pics/colony-tasks.png?raw=true)
 
-###Launching a Sandbox
+### Launching a Sandbox
 
 1) Add the Start Colony Start Sandbox task to your pipeline.
 ![Alt text](pics/start-task.png?raw=true)
@@ -62,7 +62,7 @@ This task uses **_${bamboo.SANDBOX_ID}_** variable to return the identifier of s
  If ready sandbox has quick links, they will be stored in the following bamboo variables:
  _**${bamboo.endpoint0}, ..., ${bamboo.endpointN}**_.
  
-###Ending a Sandbox from your Pipeline
+### Ending a Sandbox from your Pipeline
 Add the End Colony Sandbox task to plan.
 
 ![Alt text](pics/end-task.png?raw=true)
