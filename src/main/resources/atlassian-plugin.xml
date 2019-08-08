@@ -21,7 +21,7 @@
   <servlet key="Colony Admin Servlet" class="com.atlassian.plugins.quali.colony.adminui.AdminServlet"> 
     <url-pattern>/colony/admin</url-pattern> 
   </servlet>  
-  <web-section name="ColonyAdmin" i18n-name-key="colony-admin.name" key="colony-admin" location="system.admin" weight="1000"> 
+  <web-section name="ColonyAdmin" i18n-name-key="colony-admin.name" key="colony-admin" location="system.admin" weight="10">
     <description key="colony-admin.description">The CloudShell Colony Administration Plugin</description>  
     <label key="colony-settings-page.label"></label> 
   </web-section>
