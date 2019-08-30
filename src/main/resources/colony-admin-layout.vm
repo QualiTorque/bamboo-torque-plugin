@@ -27,7 +27,7 @@
         </div>
 
      <div class="field-group">
-        <input type="submit" value="Test Connection & Save" class="button">
+        <input type="submit" value="Save" class="button">
       </div>
     </form>
   </body>

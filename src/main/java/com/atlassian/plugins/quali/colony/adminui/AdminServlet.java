@@ -134,10 +134,10 @@ public class AdminServlet extends HttpServlet
                 }
             });
             context.put(Const.GENERAL_ERROR, "");
-            context.put(Const.GENERAL_MSG, "Connected successfully to CloudShell");
+            context.put(Const.GENERAL_MSG, "Connection saved");
 
         } else {
-            context.put(Const.GENERAL_ERROR, "Failed to test CloudShell login"); //+ restResponse.getContent());
+            context.put(Const.GENERAL_ERROR, "Failed to save CloudShell connection"); //+ restResponse.getContent());
             context.put(Const.GENERAL_MSG, "");
         }
 

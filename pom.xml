@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.atlassian.plugins.quali.colony</groupId>
     <artifactId>bamboo-colony-plugin</artifactId>
-    <version>1.0</version>
+    <version>1.0.0</version>
     <organization>
         <name>Quali</name>
         <url>https://www.quali.com/</url>
