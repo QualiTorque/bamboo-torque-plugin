@@ -12,7 +12,6 @@ public class ColonyServerRetriever {
     public static SandboxServiceConnection getColonyServerDetails(PluginSettingsFactory pluginSettingsFactory) {
         PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
         String address = (String) pluginSettings.get(AdminServlet.Config.class.getName() + '.' + Const.ADDRESS);
-        String port = (String) pluginSettings.get(AdminServlet.Config.class.getName() + '.' + Const.CS_PORT);
         String token = (String) pluginSettings.get(AdminServlet.Config.class.getName() + '.' + Const.TOKEN);
 
         return new SandboxServiceConnection(address, token, 30,30);

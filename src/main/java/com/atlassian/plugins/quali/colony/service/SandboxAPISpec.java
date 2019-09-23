@@ -24,4 +24,7 @@ public interface SandboxAPISpec {
     Call<Object> getSandboxById(@Header("Authorization") String token,
                                        @Path("spaceName") String spaceName,
                                        @Path("sandboxId") String sandboxId);
+
+    @GET("api/spaces")
+    Call<Object> getSpacesList(@Header("Authorization") String token);
 }

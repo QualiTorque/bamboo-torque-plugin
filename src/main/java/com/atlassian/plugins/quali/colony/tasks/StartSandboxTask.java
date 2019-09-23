@@ -25,12 +25,6 @@ public class StartSandboxTask implements TaskType
     @ComponentImport
     private final PluginSettingsFactory pluginSettingsFactory;
 
-////    private String spaceName;
-//    private String blueprint;
-//    private String sandboxName;
-//    private Map<String, String> artifacts;
-//    private Map<String, String> inputs;
-
     public StartSandboxTask(PluginSettingsFactory pluginSettingsFactory){
         this.pluginSettingsFactory = pluginSettingsFactory;
     }

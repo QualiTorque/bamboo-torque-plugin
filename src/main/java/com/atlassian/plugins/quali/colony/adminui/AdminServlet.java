@@ -2,7 +2,10 @@ package com.atlassian.plugins.quali.colony.adminui;
 
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
+import com.atlassian.plugins.quali.colony.api.ResponseData;
 import com.atlassian.plugins.quali.colony.service.SandboxServiceConnection;
+import com.atlassian.plugins.quali.colony.service.SandboxAPIService;
+import com.atlassian.plugins.quali.colony.service.SandboxAPIServiceImpl;
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
@@ -109,45 +112,43 @@ public class AdminServlet extends HttpServlet
         String address = req.getParameter(Const.ADDRESS).trim();
         String token = req.getParameter(Const.TOKEN).trim();
 
-        SandboxServiceConnection apiConnection = new SandboxServiceConnection(address, token,
+        SandboxServiceConnection connection = new SandboxServiceConnection(address, token,
                 10,30);
-
-
-        // TODO: implement availability check
-
-//
-//        RestResponse restResponse = null;
-//        try {
-//            restResponse = sandboxApiGateway.TryLogin();
-//        } catch (Exception e) {
-//            e.printStackTrace(); //TODO: handle
-//        }
-//
-        //if (restResponse.getHttpCode() == 200) {
-        if (apiConnection != null) {
-            transactionTemplate.execute(new TransactionCallback() {
-                public Object doInTransaction() {
-                    PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
-                    pluginSettings.put(Config.class.getName() + '.' + Const.ADDRESS, req.getParameter(Const.ADDRESS).trim());
-                    pluginSettings.put(Config.class.getName() + '.' + Const.TOKEN, req.getParameter(Const.TOKEN).trim());
-                    return null;
+        SandboxAPIService sandboxApi = new SandboxAPIServiceImpl(connection);
+        final ResponseData<Object> res;
+        // Check availability using getSpacesList call
+        try {
+            res = sandboxApi.getSpacesList();
+            if (res.getStatusCode() == 200 ) {
+                transactionTemplate.execute(new TransactionCallback() {
+                    public Object doInTransaction() {
+                        PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
+                        pluginSettings.put(Config.class.getName() + '.' + Const.ADDRESS, req.getParameter(Const.ADDRESS).trim());
+                        pluginSettings.put(Config.class.getName() + '.' + Const.TOKEN, req.getParameter(Const.TOKEN).trim());
+                        return null;
+                    }
+                })  ;
+                context.put(Const.GENERAL_ERROR, "");
+                context.put(Const.GENERAL_MSG, "Connection saved");
+                context.put(Const.CS_TOKEN_ERROR, "");
+                context.put(Const.ADDRESS_ERROR, "");
+            } else {
+                context.put(Const.GENERAL_ERROR, "Failed to save CloudShell connection. Check settings");
+                if (res.getStatusCode() == 401 || res.getStatusCode() == 403) {
+                    context.put(Const.CS_TOKEN_ERROR, "Check token");
                 }
-            });
-            context.put(Const.GENERAL_ERROR, "");
-            context.put(Const.GENERAL_MSG, "Connection saved");
-
-        } else {
-            context.put(Const.GENERAL_ERROR, "Failed to save CloudShell connection"); //+ restResponse.getContent());
-            context.put(Const.GENERAL_MSG, "");
+                context.put(Const.ADDRESS_ERROR, "");
+                context.put(Const.GENERAL_MSG, "");
+            }
         }
-
-        context.put(Const.CS_TOKEN_ERROR, "");
-        context.put(Const.ADDRESS_ERROR, "");
-        context.put(Const.CS_PORT_ERROR, "");
-
+        catch (Exception e) {
+            context.put(Const.GENERAL_MSG, "");
+            context.put(Const.ADDRESS_ERROR, "Check address");
+            context.put(Const.GENERAL_ERROR, "Failed to save CloudShell connection.");
+            context.put(Const.CS_TOKEN_ERROR, "");
+        }
         context.put(Const.ADDRESS, address);
         context.put(Const.TOKEN, token);
-
         renderer.render(Const.CS_ADMIN_LAYOUT, context, resp.getWriter());
     }
 
@@ -171,7 +172,6 @@ public class AdminServlet extends HttpServlet
     public static final class Config {
         @XmlElement
         private String userkey;
-
 
         public String getUserkey() {
             return userkey;

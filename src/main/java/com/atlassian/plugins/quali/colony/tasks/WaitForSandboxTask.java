@@ -59,7 +59,6 @@ public class WaitForSandboxTask implements TaskType{
         String jsonRes = "{}";
         buildLogger.addBuildLogEntry("Task Wait for Sandbox started");
         final String spaceName = taskContext.getConfigurationMap().get("space");
-//        final String sandboxId =  "endoyse16u00z4"; //taskContext.getBuildContext().getBuildResult().getCustomBuildData().get("SANDBOX_ID");
         final String sandboxId = taskContext.getBuildContext().getBuildResult().getCustomBuildData().get("SANDBOX_ID");
         final int timeout = Integer.parseInt(taskContext.getConfigurationMap().get("timeout"));
         buildLogger.addBuildLogEntry(String.format("Waiting for sandbox %s, time limit is %s minutes", sandboxId, timeout));

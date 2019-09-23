@@ -8,7 +8,7 @@
 
     <div class="field-group">
             <label for="name">${i18n.getText("colony-admin.address")}</label>
-            <input type="text" id="address" name="address" class="text" value="${address}">
+            <input type="text" id="address" name="address" class="text" placeholder="https://app.cloudshellcolony.com" value="${address}">
             <br />
             <span class="errorText">${address_error}</span>
     </div>
@@ -26,7 +26,7 @@
         </div>
 
      <div class="field-group">
-        <input type="submit" value="Save" class="button">
+        <input type="submit" value="Test and Save" class="button">
       </div>
     </form>
   </body>

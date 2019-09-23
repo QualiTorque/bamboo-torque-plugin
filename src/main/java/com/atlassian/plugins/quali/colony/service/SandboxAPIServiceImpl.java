@@ -48,6 +48,10 @@ public class SandboxAPIServiceImpl implements SandboxAPIService{
         return execute(sandboxAPI.deleteSandbox(this.connection.getAuthorizationHeader(), spaceName, sandboxId));
     }
 
+    public ResponseData<Object> getSpacesList() throws IOException {
+        return execute(sandboxAPI.getSpacesList(this.connection.getAuthorizationHeader()));
+    }
+
     private static <T> ResponseData<T> parseResponse(final Response<T> response) throws IOException {
         String message = response.message();
         if (!response.isSuccessful()) {
