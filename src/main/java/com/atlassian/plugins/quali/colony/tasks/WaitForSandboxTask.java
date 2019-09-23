@@ -59,8 +59,9 @@ public class WaitForSandboxTask implements TaskType{
         String jsonRes = "{}";
         buildLogger.addBuildLogEntry("Task Wait for Sandbox started");
         final String spaceName = taskContext.getConfigurationMap().get("space");
-        final String sandboxId = taskContext.getBuildContext().getBuildResult().getCustomBuildData().get("SANDBOX_ID");
+        final String sandboxId = taskContext.getConfigurationMap().get("sandboxid");;
         final int timeout = Integer.parseInt(taskContext.getConfigurationMap().get("timeout"));
+        final String varDetails = taskContext.getConfigurationMap().get("vardetails");
         buildLogger.addBuildLogEntry(String.format("Waiting for sandbox %s, time limit is %s minutes", sandboxId, timeout));
         try {
             jsonRes = waitForSandbox(spaceName, sandboxId, timeout, buildLogger);
@@ -68,6 +69,7 @@ public class WaitForSandboxTask implements TaskType{
         } catch (Exception e) {
             throw new TaskException(String.format("Unable to complete a task. Details:\n%s", e.getMessage()));
         }
+        setVariable(taskContext, varDetails, jsonRes);
         ArrayList<String> endpoints = getSandboxEndpoints(jsonRes);
         for (int i=0; i < endpoints.size(); i++) {
             setVariable(taskContext, String.format("endpoint%d", i), endpoints.get(i));

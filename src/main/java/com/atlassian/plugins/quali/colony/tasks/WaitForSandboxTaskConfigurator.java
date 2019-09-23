@@ -24,6 +24,8 @@ public class WaitForSandboxTaskConfigurator extends AbstractTaskConfigurator
 
         config.put("space", params.getString("space"));
         config.put("timeout", params.getString("timeout"));
+        config.put("sandboxid", params.getString("sandboxid"));
+        config.put("vardetails", params.getString("vardetails"));
 
         return config;
     }
@@ -32,6 +34,8 @@ public class WaitForSandboxTaskConfigurator extends AbstractTaskConfigurator
     public void populateContextForCreate(@NotNull final Map<String, Object> context)
     {
         super.populateContextForCreate(context);
+        context.put("vardetails", "Sandbox_Details");
+        context.put("sandboxid", "${bamboo.Sandbox_Id}");
     }
 
     @Override
@@ -40,6 +44,8 @@ public class WaitForSandboxTaskConfigurator extends AbstractTaskConfigurator
         super.populateContextForEdit(context, taskDefinition);
         context.put("space", taskDefinition.getConfiguration().get("space"));
         context.put("timeout", taskDefinition.getConfiguration().get("timeout"));
+        context.put("sandboxid", taskDefinition.getConfiguration().get("sandboxid"));
+        context.put("vardetails", taskDefinition.getConfiguration().get("vardetails"));
     }
 
     @Override
@@ -48,6 +54,8 @@ public class WaitForSandboxTaskConfigurator extends AbstractTaskConfigurator
         super.populateContextForView(context, taskDefinition);
         context.put("space", taskDefinition.getConfiguration().get("space"));
         context.put("timeout", taskDefinition.getConfiguration().get("timeout"));
+        context.put("sandboxid", taskDefinition.getConfiguration().get("sandboxid"));
+        context.put("vardetails", taskDefinition.getConfiguration().get("vardetails"));
     }
 
     @Override

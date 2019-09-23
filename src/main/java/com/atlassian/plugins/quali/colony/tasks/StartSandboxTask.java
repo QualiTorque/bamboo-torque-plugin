@@ -53,6 +53,7 @@ public class StartSandboxTask implements TaskType
         final String spaceName = taskContext.getConfigurationMap().get("space");
         final String blueprintName = taskContext.getConfigurationMap().get("blueprint");
         final String sandboxName = taskContext.getConfigurationMap().get("sandboxname");
+        final String varId = taskContext.getConfigurationMap().get("varid");
         final Map<String, String> artifacts = parseParametersLine(taskContext.getConfigurationMap().get("artifacts"));
         final Map<String, String> inputs = parseParametersLine(taskContext.getConfigurationMap().get("inputs"));
 
@@ -74,7 +75,8 @@ public class StartSandboxTask implements TaskType
         //final String say = taskContext.getConfigurationMap().get("say");
 
         buildLogger.addBuildLogEntry(String.format("Sandbox with id %s started successfully", sandboxId));
-        customBuildData.put("SANDBOX_ID", sandboxId);
+
+        customBuildData.put(varId, sandboxId);
 
         return TaskResultBuilder.create(taskContext).success().build();
     }

@@ -23,6 +23,7 @@ public class EndSandboxTaskConfigurator extends AbstractTaskConfigurator
         final Map<String, String> config = super.generateTaskConfigMap(params, previousTaskDefinition);
 
         config.put("space", params.getString("space"));
+        config.put("sandboxid", params.getString("sandboxid"));
 
         return config;
     }
@@ -31,6 +32,7 @@ public class EndSandboxTaskConfigurator extends AbstractTaskConfigurator
     public void populateContextForCreate(@NotNull final Map<String, Object> context)
     {
         super.populateContextForCreate(context);
+        context.put("sandboxid", "${bamboo.Sandbox_Id}");
     }
 
     @Override
@@ -38,6 +40,8 @@ public class EndSandboxTaskConfigurator extends AbstractTaskConfigurator
     {
         super.populateContextForEdit(context, taskDefinition);
         context.put("space", taskDefinition.getConfiguration().get("space"));
+        context.put("sandboxid", "${bamboo.Sandbox_Id}");
+
     }
 
     @Override
@@ -45,6 +49,7 @@ public class EndSandboxTaskConfigurator extends AbstractTaskConfigurator
     {
         super.populateContextForView(context, taskDefinition);
         context.put("space", taskDefinition.getConfiguration().get("space"));
+        context.put("sandboxid", "${bamboo.Sandbox_Id}");
     }
 
     @Override

@@ -19,7 +19,7 @@ import java.util.Map;
 public class StartSandboxTaskConfigurator extends AbstractTaskConfigurator
 {
     private TextProvider textProvider;
-    private List<String> keys = Arrays.asList("space", "blueprint", "sandboxname", "artifacts", "inputs");
+    private List<String> keys = Arrays.asList("space", "blueprint", "sandboxname", "artifacts", "inputs", "varid");
 
     @NotNull
     @Override
@@ -37,6 +37,7 @@ public class StartSandboxTaskConfigurator extends AbstractTaskConfigurator
     public void populateContextForCreate(@NotNull final Map<String, Object> context)
     {
         super.populateContextForCreate(context);
+        context.put("varid", "Sandbox_Id");
     }
 
     @Override
