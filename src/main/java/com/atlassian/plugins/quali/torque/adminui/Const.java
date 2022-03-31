@@ -1,4 +1,4 @@
-package com.atlassian.plugins.quali.colony.adminui;
+package com.atlassian.plugins.quali.torque.adminui;
 
 public interface Const {
     String CS_TOKEN_ERROR ="token_error";
@@ -8,5 +8,5 @@ public interface Const {
     String GENERAL_MSG ="general_msg";
     String TOKEN = "token";
 
-    String CS_ADMIN_LAYOUT = "colony-admin-layout.vm";
+    String CS_ADMIN_LAYOUT = "torque-admin-layout.vm";
 }

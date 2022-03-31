@@ -9,52 +9,52 @@
     <param name="plugin-logo">images/pluginLogo.png</param> 
   </plugin-info>  
   <!-- add our i18n resource -->  
-  <resource type="i18n" name="i18n" location="bamboo-colony-plugin"/>  
+  <resource type="i18n" name="i18n" location="bamboo-torque-plugin"/>  
   <!-- add our web resources -->  
-  <web-resource key="bamboo-colony-plugin-resources" name="bamboo-colony-plugin Web Resources"> 
+  <web-resource key="bamboo-torque-plugin-resources" name="bamboo-torque-plugin Web Resources"> 
     <dependency>com.atlassian.auiplugin:ajs</dependency>  
-    <resource type="download" name="bamboo-colony-plugin.css" location="/css/bamboo-colony-plugin.css"/>  
-    <resource type="download" name="bamboo-colony-plugin.js" location="/js/bamboo-colony-plugin.js"/>  
+    <resource type="download" name="bamboo-torque-plugin.css" location="/css/bamboo-torque-plugin.css"/>  
+    <resource type="download" name="bamboo-torque-plugin.js" location="/js/bamboo-torque-plugin.js"/>  
     <resource type="download" name="images/" location="/images"/>  
-    <context>bamboo-colony-plugin</context> 
+    <context>bamboo-torque-plugin</context> 
   </web-resource>  
-  <servlet key="Colony Admin Servlet" class="com.atlassian.plugins.quali.colony.adminui.AdminServlet"> 
-    <url-pattern>/colony/admin</url-pattern> 
+  <servlet key="Torque Admin Servlet" class="com.atlassian.plugins.quali.torque.adminui.AdminServlet"> 
+    <url-pattern>/torque/admin</url-pattern> 
   </servlet>  
-  <web-section name="ColonyAdmin" i18n-name-key="colony-admin.name" key="colony-admin" location="system.admin" weight="10">
-    <description key="colony-admin.description">The CloudShell Colony Administration Plugin</description>  
-    <label key="colony-settings-page.label"></label> 
+  <web-section name="TorqueAdmin" i18n-name-key="torque-admin.name" key="torque-admin" location="system.admin" weight="10">
+    <description key="torque-admin.description">The Torque Administration Plugin</description>  
+    <label key="torque-settings-page.label"></label> 
   </web-section>
-  <web-item name="ColonySettingsPage" i18n-name-key="colony-settings-page.name"
-            key="colony-settings-page" section="system.admin/colony-admin"
+  <web-item name="TorqueSettingsPage" i18n-name-key="torque-settings-page.name"
+            key="torque-settings-page" section="system.admin/torque-admin"
             weight="10">
-      <description key="colony-settings-page.description">CloudShell Colony Configuration Page</description>
-      <label key="colony-settings-page.name"></label>
-      <link linkId="colony-settings-page-link">/plugins/servlet/colony/admin</link>
+      <description key="torque-settings-page.description">Torque Configuration Page</description>
+      <label key="torque-settings-page.name"></label>
+      <link linkId="torque-settings-page-link">/plugins/servlet/torque/admin</link>
   </web-item>
-  <taskType name="Start Colony Sandbox" class="com.atlassian.plugins.quali.colony.tasks.StartSandboxTask" key="startSandbox">
+  <taskType name="Start Torque Sandbox" class="com.atlassian.plugins.quali.torque.tasks.StartSandboxTask" key="startSandbox">
     <description>Start Sandbox Task</description>
     <!-- Categories available in 3.1: "builder", "test" and "deployment"
     <category name=""/>
     -->
-    <configuration class="com.atlassian.plugins.quali.colony.tasks.StartSandboxTaskConfigurator"/>
+    <configuration class="com.atlassian.plugins.quali.torque.tasks.StartSandboxTaskConfigurator"/>
     <resource type="freemarker" name="edit" location="templates/editStartSandBoxTask.ftl"/>
-    <resource type="download" name="icon" location="images/colony-icon.png"/>
+    <resource type="download" name="icon" location="images/torque-icon.png"/>
   </taskType>
-  <taskType name="End Colony Sandbox" class="com.atlassian.plugins.quali.colony.tasks.EndSandboxTask" key="endSandbox">
+  <taskType name="End Torque Sandbox" class="com.atlassian.plugins.quali.torque.tasks.EndSandboxTask" key="endSandbox">
     <description>End Sandbox Task</description>
-    <configuration class="com.atlassian.plugins.quali.colony.tasks.EndSandboxTaskConfigurator"/>
-    <resource type="download" name="icon" location="images/colony-icon.png"/>
+    <configuration class="com.atlassian.plugins.quali.torque.tasks.EndSandboxTaskConfigurator"/>
+    <resource type="download" name="icon" location="images/torque-icon.png"/>
     <resource type="freemarker" name="edit" location="templates/editEndSandboxTask.ftl"/>
     <!-- Categories available in 3.1: "builder", "test" and "deployment"
     <category name=""/>
     -->
-<!--    <configuration class="com.atlassian.plugins.quali.colony.tasks.StartSandboxTaskConfigurator"/>-->
+<!--    <configuration class="com.atlassian.plugins.quali.torque.tasks.StartSandboxTaskConfigurator"/>-->
   </taskType>
-  <taskType name="Wait For Colony Sandbox" class="com.atlassian.plugins.quali.colony.tasks.WaitForSandboxTask" key="waitSandbox">
+  <taskType name="Wait For Torque Sandbox" class="com.atlassian.plugins.quali.torque.tasks.WaitForSandboxTask" key="waitSandbox">
     <description>Wait for Sandbox</description>
-    <configuration class="com.atlassian.plugins.quali.colony.tasks.WaitForSandboxTaskConfigurator"/>
-    <resource type="download" name="icon" location="images/colony-icon.png"/>
+    <configuration class="com.atlassian.plugins.quali.torque.tasks.WaitForSandboxTaskConfigurator"/>
+    <resource type="download" name="icon" location="images/torque-icon.png"/>
     <resource type="freemarker" name="edit" location="templates/editWaitForSandboxTask.ftl"/>
   </taskType>
 

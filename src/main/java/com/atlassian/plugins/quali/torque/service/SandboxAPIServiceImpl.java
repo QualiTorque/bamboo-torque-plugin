@@ -1,9 +1,9 @@
-package com.atlassian.plugins.quali.colony.service;
+package com.atlassian.plugins.quali.torque.service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import okhttp3.OkHttpClient;
-import com.atlassian.plugins.quali.colony.api.*;
+import com.atlassian.plugins.quali.torque.api.*;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;

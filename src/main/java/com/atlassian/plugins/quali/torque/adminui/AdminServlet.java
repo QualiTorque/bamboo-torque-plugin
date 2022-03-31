@@ -1,11 +1,11 @@
-package com.atlassian.plugins.quali.colony.adminui;
+package com.atlassian.plugins.quali.torque.adminui;
 
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
-import com.atlassian.plugins.quali.colony.api.ResponseData;
-import com.atlassian.plugins.quali.colony.service.SandboxServiceConnection;
-import com.atlassian.plugins.quali.colony.service.SandboxAPIService;
-import com.atlassian.plugins.quali.colony.service.SandboxAPIServiceImpl;
+import com.atlassian.plugins.quali.torque.api.ResponseData;
+import com.atlassian.plugins.quali.torque.service.SandboxServiceConnection;
+import com.atlassian.plugins.quali.torque.service.SandboxAPIService;
+import com.atlassian.plugins.quali.torque.service.SandboxAPIServiceImpl;
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
@@ -26,8 +26,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-// NOTE(ddovbii): mainly the code was taken from https://github.com/QualiSystems/Bamboo-cloudshell-plugin
 
 @Scanned
 public class AdminServlet extends HttpServlet
@@ -76,10 +74,10 @@ public class AdminServlet extends HttpServlet
         String token = getConfigKey(pluginSettings, Const.TOKEN);
 
         ValidateKey(context, address, Const.ADDRESS, Const.ADDRESS_ERROR,
-                "Please set a CloudShell Colony server Address");
+                "Please set a Torque server Address");
 
         ValidateKey(context, token, Const.TOKEN, Const.CS_TOKEN_ERROR,
-                "Please set a CloudShell Colony token");
+                "Please set a Torque token");
 
         context.put(Const.GENERAL_ERROR, "");
         context.put(Const.GENERAL_MSG, "");
@@ -133,7 +131,7 @@ public class AdminServlet extends HttpServlet
                 context.put(Const.CS_TOKEN_ERROR, "");
                 context.put(Const.ADDRESS_ERROR, "");
             } else {
-                context.put(Const.GENERAL_ERROR, "Failed to save CloudShell connection. Check settings");
+                context.put(Const.GENERAL_ERROR, "Failed to save Torque connection. Check settings");
                 if (res.getStatusCode() == 401 || res.getStatusCode() == 403) {
                     context.put(Const.CS_TOKEN_ERROR, "Check token");
                 }
@@ -144,7 +142,7 @@ public class AdminServlet extends HttpServlet
         catch (Exception e) {
             context.put(Const.GENERAL_MSG, "");
             context.put(Const.ADDRESS_ERROR, "Check address");
-            context.put(Const.GENERAL_ERROR, "Failed to save CloudShell connection.");
+            context.put(Const.GENERAL_ERROR, "Failed to save Torque connection.");
             context.put(Const.CS_TOKEN_ERROR, "");
         }
         context.put(Const.ADDRESS, address);

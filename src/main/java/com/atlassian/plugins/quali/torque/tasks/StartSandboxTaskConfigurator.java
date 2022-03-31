@@ -1,4 +1,4 @@
-package com.atlassian.plugins.quali.colony.tasks;
+package com.atlassian.plugins.quali.torque.tasks;
 
 import com.atlassian.bamboo.collections.ActionParametersMap;
 import com.atlassian.bamboo.task.AbstractTaskConfigurator;
@@ -10,11 +10,16 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
-public class EndSandboxTaskConfigurator extends AbstractTaskConfigurator
+// TODO: add processing and validation for artifacts and inputs (key1=value1, ...)
+
+public class StartSandboxTaskConfigurator extends AbstractTaskConfigurator
 {
     private TextProvider textProvider;
+    private List<String> keys = Arrays.asList("space", "blueprint", "sandboxname", "artifacts", "inputs", "varid");
 
     @NotNull
     @Override
@@ -22,9 +27,9 @@ public class EndSandboxTaskConfigurator extends AbstractTaskConfigurator
     {
         final Map<String, String> config = super.generateTaskConfigMap(params, previousTaskDefinition);
 
-        config.put("space", params.getString("space"));
-        config.put("sandboxid", params.getString("sandboxid"));
-
+        for (String key: keys) {
+            config.put(key, params.getString(key));
+        }
         return config;
     }
 
@@ -32,24 +37,25 @@ public class EndSandboxTaskConfigurator extends AbstractTaskConfigurator
     public void populateContextForCreate(@NotNull final Map<String, Object> context)
     {
         super.populateContextForCreate(context);
-        context.put("sandboxid", "${bamboo.Sandbox_Id}");
+        context.put("varid", "Sandbox_Id");
     }
 
     @Override
     public void populateContextForEdit(@NotNull final Map<String, Object> context, @NotNull final TaskDefinition taskDefinition)
     {
         super.populateContextForEdit(context, taskDefinition);
-        context.put("space", taskDefinition.getConfiguration().get("space"));
-        context.put("sandboxid", "${bamboo.Sandbox_Id}");
-
+        for (String key: keys) {
+            context.put(key, taskDefinition.getConfiguration().get(key));
+        }
     }
 
     @Override
     public void populateContextForView(@NotNull final Map<String, Object> context, @NotNull final TaskDefinition taskDefinition)
     {
         super.populateContextForView(context, taskDefinition);
-        context.put("space", taskDefinition.getConfiguration().get("space"));
-        context.put("sandboxid", "${bamboo.Sandbox_Id}");
+        for (String key: keys) {
+            context.put(key, taskDefinition.getConfiguration().get(key));
+        }
     }
 
     @Override
@@ -57,8 +63,8 @@ public class EndSandboxTaskConfigurator extends AbstractTaskConfigurator
     {
         super.validate(params, errorCollection);
 
-        final String spaceName = params.getString("space");
-        if (StringUtils.isEmpty(spaceName))
+        final String sayValue = params.getString("space");
+        if (StringUtils.isEmpty(sayValue))
         {
             errorCollection.addError("space", textProvider.getText("startsandbox.space.error"));
         }

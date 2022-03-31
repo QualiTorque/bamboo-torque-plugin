@@ -1,12 +1,12 @@
-# Bamboo-Colony-Plugin
+# Bamboo-Torque-Plugin
 
 ## Intro
 
 When a developer commits code to the source control repository, a new build is triggered and a new artifact is created.
-While testing, CloudShell Colony provides on-demands sandbox environments integrating with test tools and storage
+While testing, CloudShell Torque provides on-demands sandbox environments integrating with test tools and storage
 providers to pull the artifacts and push to Production.
 
-Bamboo-Colony-Plugin integrates CloudShell Colony into your Bamboo plan. You can use the available build tasks to create
+Bamboo-Torque-Plugin integrates CloudShell Torque into your Bamboo plan. You can use the available build tasks to create
 a sandbox from any blueprint, start your tests and end the sandbox when finished.
 
 ## Installation
@@ -17,33 +17,33 @@ a sandbox from any blueprint, start your tests and end the sandbox when finished
 
 3) Upload the jar file into the "Upload add-on" section
 
-## Configuring CloudShell Colony in Bamboo
+## Configuring CloudShell Torque in Bamboo
 
-1) Generate an API token in CloudShell Colony
+1) Generate an API token in CloudShell Torque
 
 2) Open Bamboo administration page
 
-3) Open "CloudShell Colony Settings"
+3) Open "CloudShell Torque Settings"
 
 3) Fill up all required fields.
 
 ![Alt text](pics/bamboo-admin.png?raw=true)
 
-### CloudShell Colony plan tasks
+### CloudShell Torque plan tasks
 
 After installation you will have three tasks added to the task list available in Bamboo:
 
-- Start Colony Sandbox Task
-- Wait for Colony Sandbox Task
-- End Colony Sandbox Task
-![Alt text](pics/colony-tasks.png?raw=true)
+- Start Torque Sandbox Task
+- Wait for Torque Sandbox Task
+- End Torque Sandbox Task
+![Alt text](pics/torque-tasks.png?raw=true)
 
 ### Launching a Sandbox
 
-1) Add the Start Colony Start Sandbox task to your pipeline.
+1) Add the Start Torque Start Sandbox task to your pipeline.
 ![Alt text](pics/start-task.png?raw=true)
 
- - **Space name** - enter a name for your CloudShell Colony space.
+ - **Space name** - enter a name for your CloudShell Torque space.
  - **Blueprint name** - Enter the name of the blueprint you would like to use for creating this sandbox.
  - **Sandbox name** - Enter a name for the sandbox
  - **Artifacts** - If this blueprint has artifacts, you may specify them in a comma separated list of artifact names and their values. e.g., artifact1 name=value1, artifact2 name=value2
@@ -51,11 +51,11 @@ After installation you will have three tasks added to the task list available in
 
 This task uses **_${bamboo.SANDBOX_ID}_** variable to return the identifier of sandbox.
 
-2) Add the Wait For Colony Sandbox task.
+2) Add the Wait For Torque Sandbox task.
 
 ![Alt text](pics/wait-task.png?raw=true)
 
- - **Space** - enter a name for your CloudShell Colony space.
+ - **Space** - enter a name for your CloudShell Torque space.
  - **Tiemeout** - Set the timeout for this step, if your sandbox will not be ready when the timeout is reached,
  Bamboo will abort the deployment.
  
@@ -63,10 +63,10 @@ This task uses **_${bamboo.SANDBOX_ID}_** variable to return the identifier of s
  _**${bamboo.endpoint0}, ..., ${bamboo.endpointN}**_.
  
 ### Ending a Sandbox from your Pipeline
-Add the End Colony Sandbox task to plan.
+Add the End Torque Sandbox task to plan.
 
 ![Alt text](pics/end-task.png?raw=true)
 
- - **Space Name** - Enter the name of your CloudShell Colony space.
+ - **Space Name** - Enter the name of your CloudShell Torque space.
 
-#### Note: CloudShell Colony Bamboo plugin supports only one Sandbox per job.
+#### Note: CloudShell Torque Bamboo plugin supports only one Sandbox per job.

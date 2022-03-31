@@ -1,4 +1,4 @@
-package com.atlassian.plugins.quali.colony.tasks;
+package com.atlassian.plugins.quali.torque.tasks;
 
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.task.TaskContext;
@@ -7,11 +7,11 @@ import com.atlassian.bamboo.task.TaskResult;
 import com.atlassian.bamboo.task.TaskResultBuilder;
 import com.atlassian.bamboo.task.TaskType;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
-import com.atlassian.plugins.quali.colony.ColonyServerRetriever;
-import com.atlassian.plugins.quali.colony.api.ResponseData;
-import com.atlassian.plugins.quali.colony.service.SandboxAPIService;
-import com.atlassian.plugins.quali.colony.service.SandboxAPIServiceImpl;
-import com.atlassian.plugins.quali.colony.service.SandboxServiceConnection;
+import com.atlassian.plugins.quali.torque.TorqueServerRetriever;
+import com.atlassian.plugins.quali.torque.api.ResponseData;
+import com.atlassian.plugins.quali.torque.service.SandboxAPIService;
+import com.atlassian.plugins.quali.torque.service.SandboxAPIServiceImpl;
+import com.atlassian.plugins.quali.torque.service.SandboxServiceConnection;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 
 import java.util.Map;
@@ -26,7 +26,7 @@ public class EndSandboxTask implements TaskType
     }
 
     private SandboxAPIService createAPIService() {
-        SandboxServiceConnection serviceConnection = ColonyServerRetriever.getColonyServerDetails(pluginSettingsFactory);
+        SandboxServiceConnection serviceConnection = TorqueServerRetriever.getTorqueServerDetails(pluginSettingsFactory);
         return new SandboxAPIServiceImpl(serviceConnection);
     }
 

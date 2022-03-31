@@ -1,20 +1,20 @@
 <html>
   <head>
-    <title>${i18n.getText("colony-admin.label")}</title>
+    <title>${i18n.getText("torque-admin.label")}</title>
     <meta name="decorator" content="atl.admin">
   </head>
   <body>
     <form id="admin" class="aui" method="POST">
 
     <div class="field-group">
-            <label for="name">${i18n.getText("colony-admin.address")}</label>
-            <input type="text" id="address" name="address" class="text" placeholder="https://app.cloudshellcolony.com" value="${address}">
+            <label for="name">${i18n.getText("torque-admin.address")}</label>
+            <input type="text" id="address" name="address" class="text" placeholder="https://app.qtorque.com" value="${address}">
             <br />
             <span class="errorText">${address_error}</span>
     </div>
 
     <div class="field-group">
-            <label for="name">${i18n.getText("colony-admin.token")}</label>
+            <label for="name">${i18n.getText("torque-admin.token")}</label>
             <input type="password" id="token" name="token" class="text" value="${token}">
             <br />
             <span class="errorText">${token_error}</span>
