@@ -1,7 +1,7 @@
-package com.atlassian.plugins.quali.colony.service;
+package com.atlassian.plugins.quali.torque.service;
 
-import com.atlassian.plugins.quali.colony.api.CreateSandboxRequest;
-import com.atlassian.plugins.quali.colony.api.CreateSandboxResponse;
+import com.atlassian.plugins.quali.torque.api.CreateSandboxRequest;
+import com.atlassian.plugins.quali.torque.api.CreateSandboxResponse;
 import retrofit2.Call;
 import retrofit2.http.*;
 

@@ -2,15 +2,15 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.atlassian.plugins.quali.colony</groupId>
-    <artifactId>bamboo-colony-plugin</artifactId>
+    <groupId>com.atlassian.plugins.quali.torque</groupId>
+    <artifactId>bamboo-torque-plugin</artifactId>
     <version>1.0.0</version>
     <organization>
         <name>Quali</name>
         <url>https://www.quali.com/</url>
     </organization>
-    <name>bamboo-colony-plugin</name>
-    <description>This is the com.atlassian.plugins.quali.colony:bamboo-colony-plugin plugin for Atlassian Bamboo.</description>
+    <name>bamboo-torque-plugin</name>
+    <description>This is the com.atlassian.plugins.quali.torque:bamboo-torque-plugin plugin for Atlassian Bamboo.</description>
     <packaging>atlassian-plugin</packaging>
     <properties>
         <bamboo.version>6.8.0</bamboo.version>
@@ -162,7 +162,7 @@
                     <instructions>
                         <Atlassian-Plugin-Key>${atlassian.plugin.key}</Atlassian-Plugin-Key>
                         <!-- Add package to export here -->
-                        <Export-Package>com.atlassian.plugins.quali.colony.api,</Export-Package>
+                        <Export-Package>com.atlassian.plugins.quali.torque.api,</Export-Package>
                         <!-- Add package import here -->
                         <Import-Package>org.springframework.osgi.*;resolution:="optional", org.eclipse.gemini.blueprint.*;resolution:="optional", *</Import-Package>
                         <!-- Ensure plugin is spring powered -->

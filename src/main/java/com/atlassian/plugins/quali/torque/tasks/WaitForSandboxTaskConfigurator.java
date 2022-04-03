@@ -1,4 +1,4 @@
-package com.atlassian.plugins.quali.colony.tasks;
+package com.atlassian.plugins.quali.torque.tasks;
 
 import com.atlassian.bamboo.collections.ActionParametersMap;
 import com.atlassian.bamboo.task.AbstractTaskConfigurator;

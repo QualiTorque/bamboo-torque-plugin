@@ -1,4 +1,4 @@
-package com.atlassian.plugins.quali.colony.tasks;
+package com.atlassian.plugins.quali.torque.tasks;
 
 import com.atlassian.bamboo.task.TaskType;
 import com.atlassian.bamboo.build.logger.BuildLogger;
@@ -8,13 +8,13 @@ import com.atlassian.bamboo.task.TaskResult;
 import com.atlassian.bamboo.task.TaskResultBuilder;
 import com.atlassian.bamboo.task.TaskType;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
-import com.atlassian.plugins.quali.colony.ColonyServerRetriever;
-import com.atlassian.plugins.quali.colony.api.CreateSandboxRequest;
-import com.atlassian.plugins.quali.colony.api.CreateSandboxResponse;
-import com.atlassian.plugins.quali.colony.api.ResponseData;
-import com.atlassian.plugins.quali.colony.service.SandboxAPIService;
-import com.atlassian.plugins.quali.colony.service.SandboxAPIServiceImpl;
-import com.atlassian.plugins.quali.colony.service.SandboxServiceConnection;
+import com.atlassian.plugins.quali.torque.TorqueServerRetriever;
+import com.atlassian.plugins.quali.torque.api.CreateSandboxRequest;
+import com.atlassian.plugins.quali.torque.api.CreateSandboxResponse;
+import com.atlassian.plugins.quali.torque.api.ResponseData;
+import com.atlassian.plugins.quali.torque.service.SandboxAPIService;
+import com.atlassian.plugins.quali.torque.service.SandboxAPIServiceImpl;
+import com.atlassian.plugins.quali.torque.service.SandboxServiceConnection;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 
 import java.util.HashMap;
@@ -30,7 +30,7 @@ public class StartSandboxTask implements TaskType
     }
 
     private SandboxAPIService createAPIService() {
-        SandboxServiceConnection serviceConnection = ColonyServerRetriever.getColonyServerDetails(pluginSettingsFactory);
+        SandboxServiceConnection serviceConnection = TorqueServerRetriever.getTorqueServerDetails(pluginSettingsFactory);
         return new SandboxAPIServiceImpl(serviceConnection);
     }
 
@@ -38,8 +38,10 @@ public class StartSandboxTask implements TaskType
         HashMap<String, String> holder = new HashMap<>();
         String[] keyVals = params.split(", ");
         for (String keyVal : keyVals) {
-            String[] parts = keyVal.split("=", 2);
-            holder.put(parts[0], parts[1]);
+            if (!keyVal.isEmpty()) {
+                String[] parts = keyVal.split("=", 2);
+                holder.put(parts[0], parts[1]);
+            }
         }
         return holder;
     }

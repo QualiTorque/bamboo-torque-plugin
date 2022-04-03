@@ -1,4 +1,4 @@
-package com.atlassian.plugins.quali.colony.tasks;
+package com.atlassian.plugins.quali.torque.tasks;
 
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.task.TaskContext;
@@ -8,15 +8,14 @@ import com.atlassian.bamboo.task.TaskResultBuilder;
 import com.atlassian.bamboo.task.TaskType;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import jdk.nashorn.api.scripting.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
-import com.atlassian.plugins.quali.colony.ColonyServerRetriever;
-import com.atlassian.plugins.quali.colony.api.*;
-import com.atlassian.plugins.quali.colony.service.SandboxAPIService;
-import com.atlassian.plugins.quali.colony.service.SandboxAPIServiceImpl;
-import com.atlassian.plugins.quali.colony.service.SandboxServiceConnection;
+import com.atlassian.plugins.quali.torque.TorqueServerRetriever;
+import com.atlassian.plugins.quali.torque.api.*;
+import com.atlassian.plugins.quali.torque.service.SandboxAPIService;
+import com.atlassian.plugins.quali.torque.service.SandboxAPIServiceImpl;
+import com.atlassian.plugins.quali.torque.service.SandboxServiceConnection;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.google.gson.Gson;
 import com.atlassian.bamboo.variable.CustomVariableContext;
@@ -49,7 +48,7 @@ public class WaitForSandboxTask implements TaskType{
     }
 
     private SandboxAPIService createAPIService() {
-        SandboxServiceConnection serviceConnection = ColonyServerRetriever.getColonyServerDetails(pluginSettingsFactory);
+        SandboxServiceConnection serviceConnection = TorqueServerRetriever.getTorqueServerDetails(pluginSettingsFactory);
         return new SandboxAPIServiceImpl(serviceConnection);
     }
 
@@ -178,7 +177,7 @@ public class WaitForSandboxTask implements TaskType{
     {
         final BuildLogger buildLogger = taskContext.getBuildLogger();
         final VariableContext variableContext = taskContext.getBuildContext().getVariableContext();
-        final Map<String, VariableDefinitionContext> definitions = variableContext.getDefinitions();
+        final Map<String, VariableDefinitionContext> definitions = variableContext.getEffectiveVariables();
 
         final VariableDefinitionContext definition = definitions.get(key);
         if (definition != null)

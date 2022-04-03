@@ -1,4 +1,4 @@
-package com.atlassian.plugins.quali.colony.service;
+package com.atlassian.plugins.quali.torque.service;
 
 /**
  * Created by shay-k on 18/06/2017.

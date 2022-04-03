@@ -1,4 +1,4 @@
-package com.atlassian.plugins.quali.colony.api;
+package com.atlassian.plugins.quali.torque.api;
 
 public class SandboxStatus
 {
