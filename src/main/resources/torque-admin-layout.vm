@@ -8,7 +8,7 @@
 
     <div class="field-group">
             <label for="name">${i18n.getText("torque-admin.address")}</label>
-            <input type="text" id="address" name="address" class="text" placeholder="https://app.qtorque.com" value="${address}">
+            <input type="text" id="address" name="address" class="text" placeholder="https://app.qtorque.io" value="${address}">
             <br />
             <span class="errorText">${address_error}</span>
     </div>
