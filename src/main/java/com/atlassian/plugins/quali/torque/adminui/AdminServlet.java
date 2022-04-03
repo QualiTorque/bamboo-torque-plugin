@@ -76,13 +76,13 @@ public class AdminServlet extends HttpServlet
         ValidateKey(context, address, Const.ADDRESS, Const.ADDRESS_ERROR,
                 "Please set a Torque server Address");
 
-        ValidateKey(context, token, Const.TOKEN, Const.CS_TOKEN_ERROR,
+        ValidateKey(context, token, Const.TOKEN, Const.TORQUE_TOKEN_ERROR,
                 "Please set a Torque token");
 
         context.put(Const.GENERAL_ERROR, "");
         context.put(Const.GENERAL_MSG, "");
 
-        renderer.render(Const.CS_ADMIN_LAYOUT, context, response.getWriter());
+        renderer.render(Const.TORQUE_ADMIN_LAYOUT, context, response.getWriter());
     }
 
     private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException
@@ -128,12 +128,12 @@ public class AdminServlet extends HttpServlet
                 })  ;
                 context.put(Const.GENERAL_ERROR, "");
                 context.put(Const.GENERAL_MSG, "Connection saved");
-                context.put(Const.CS_TOKEN_ERROR, "");
+                context.put(Const.TORQUE_TOKEN_ERROR, "");
                 context.put(Const.ADDRESS_ERROR, "");
             } else {
                 context.put(Const.GENERAL_ERROR, "Failed to save Torque connection. Check settings");
                 if (res.getStatusCode() == 401 || res.getStatusCode() == 403) {
-                    context.put(Const.CS_TOKEN_ERROR, "Check token");
+                    context.put(Const.TORQUE_TOKEN_ERROR, "Check token");
                 }
                 context.put(Const.ADDRESS_ERROR, "");
                 context.put(Const.GENERAL_MSG, "");
@@ -143,11 +143,11 @@ public class AdminServlet extends HttpServlet
             context.put(Const.GENERAL_MSG, "");
             context.put(Const.ADDRESS_ERROR, "Check address");
             context.put(Const.GENERAL_ERROR, "Failed to save Torque connection.");
-            context.put(Const.CS_TOKEN_ERROR, "");
+            context.put(Const.TORQUE_TOKEN_ERROR, "");
         }
         context.put(Const.ADDRESS, address);
         context.put(Const.TOKEN, token);
-        renderer.render(Const.CS_ADMIN_LAYOUT, context, resp.getWriter());
+        renderer.render(Const.TORQUE_ADMIN_LAYOUT, context, resp.getWriter());
     }
 
     private void ValidateKey(Map<String, Object> context, String key, String userKey, String userKeyError, String errorMessage) {
