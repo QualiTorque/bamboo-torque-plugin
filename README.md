@@ -1,72 +1,73 @@
-# Bamboo-Torque-Plugin
+# Bamboo Torque Plugin
 
 ## Intro
 
+This README explains how to install, configure, and use the __bamboo-torque-plugin__.
 When a developer commits code to the source control repository, a new build is triggered and a new artifact is created.
 While testing, Torque provides on-demands sandbox environments integrating with test tools and storage
 providers to pull the artifacts and push to Production.
 
-Bamboo-Torque-Plugin integrates Torque into your Bamboo plan. You can use the available build tasks to create
+__Bamboo Torque Plugin__ integrates Torque into your Bamboo plan. You can use the available build tasks to create
 a sandbox from any blueprint, start your tests and end the sandbox when finished.
 
 ## Installation
 
-1) Download the plugin jar in marketplace
+1) In the __Bamboo administration__ page, scroll down to the __Manage apps__ section and click __Find new apps__.
 
-2) Navigate to the add-ons section in Bamboo administration page
+2) Search for __Torque__ and install the __Bamboo Torque Plugin__.
 
-3) Upload the jar file into the "Upload add-on" section
+## Configuration
 
-## Configuring Torque in Bamboo
+1) Generate an API token in Torque: 
+<br>a. In the desired Torque space, go to the __Settings > Integrations__ page and click __Bamboo__.
+<br>b. Click the __New Token__ button.
+<br>c. Copy the generated token.
 
-1) Generate an API token in Torque
+2) Open the __Bamboo administration__ page.
 
-2) Open Bamboo administration page
+3) Open __Torque Settings__.
 
-3) Open "Torque Settings"
-
-3) Fill up all required fields.
-
+4) Fill in all fields.
 ![Alt text](pics/bamboo-admin.png?raw=true)
 
-### Torque plan tasks
+## Torque plan tasks
 
-After installation you will have three tasks added to the task list available in Bamboo:
+After installation you will have three tasks added to your Bamboo task list:
 
-- Start Torque Sandbox Task
-- Wait for Torque Sandbox Task
-- End Torque Sandbox Task
+- [Start Torque Sandbox](#start-torque-sandbox)
+- [Wait for Torque Sandbox](#wait-for-torque-sandbox)
+- [End Torque Sandbox](#end-torque-sandbox)
+
 ![Alt text](pics/torque-tasks.png?raw=true)
 
-### Launching a Sandbox
+### Start Torque Sandbox
 
-1) Add the Start Torque Start Sandbox task to your pipeline.
+1) Add the __Start Torque Sandbox__ task.
 ![Alt text](pics/start-task.png?raw=true)
+<br> * **Space name** - enter a name for your Torque space.
+<br> *  **Blueprint name** - Enter the name of the blueprint you would like to use for creating this sandbox.
+<br> *  **Sandbox name** - Enter a name for the sandbox
+<br> *  **Artifacts** - If this blueprint has artifacts, you may specify them in a comma separated list of artifact names and their values. e.g., artifact1 name=value1, artifact2 name=value2
+<br> *  **Inputs** - If this blueprint has inputs, you may specify them in a comma separated list of input names and their values. e.g., input1 name=value1, input2 name=value2
 
- - **Space name** - enter a name for your Torque space.
- - **Blueprint name** - Enter the name of the blueprint you would like to use for creating this sandbox.
- - **Sandbox name** - Enter a name for the sandbox
- - **Artifacts** - If this blueprint has artifacts, you may specify them in a comma separated list of artifact names and their values. e.g., artifact1 name=value1, artifact2 name=value2
- - **Inputs** - If this blueprint has inputs, you may specify them in a comma separated list of input names and their values. e.g., input1 name=value1, input2 name=value2
+This task uses the **_${bamboo.SANDBOX_ID}_** variable to return the identifier of sandbox.
 
-This task uses **_${bamboo.SANDBOX_ID}_** variable to return the identifier of sandbox.
+### Wait for Torque Sandbox
 
-2) Add the Wait For Torque Sandbox task.
+The __Wait for Sandbox__ task is used to wait for the sandbox to become Active. While the sandbox is launching, it cannot be used and the application links are unavailable.
 
+* Add the Wait For Torque Sandbox task.
 ![Alt text](pics/wait-task.png?raw=true)
-
- - **Space** - enter a name for your Torque space.
- - **Tiemeout** - Set the timeout for this step, if your sandbox will not be ready when the timeout is reached,
+<br>* **Space** - enter a name for your Torque space.
+<br>* **Tiemeout** - Set the timeout for this step, if your sandbox will not be ready when the timeout is reached,
  Bamboo will abort the deployment.
  
- If ready sandbox has quick links, they will be stored in the following bamboo variables:
+ If the active sandbox has quick links, they will be stored in the following bamboo variables:
  _**${bamboo.endpoint0}, ..., ${bamboo.endpointN}**_.
  
-### Ending a Sandbox from your Pipeline
-Add the End Torque Sandbox task to plan.
-
+### End Torque Sandbox
+* Add the __End Torque Sandbox__ task to your plan.
 ![Alt text](pics/end-task.png?raw=true)
-
- - **Space Name** - Enter the name of your Torque space.
+<br> * **Space Name** - Enter the name of your Torque space.
 
 #### Note: Torque Bamboo plugin supports only one Sandbox per job.
