@@ -66,8 +66,8 @@ public class StartSandboxTask implements TaskType
             res = sandboxAPIService.createSandbox(spaceName, req);
         }
         catch (Exception e) {
-            buildLogger.addErrorLogEntry("Unable to start sandbox");
-            throw new TaskException(e.getMessage());
+            buildLogger.addErrorLogEntry("Unable to start sandbox", e);
+            throw new TaskException(e.getMessage(), e);
         }
 
         if(!res.isSuccessful())

@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class SandboxAPIServiceImpl implements SandboxAPIService{
     private SandboxAPISpec sandboxAPI;
     private SandboxServiceConnection connection;
+
     public SandboxAPIServiceImpl(SandboxServiceConnection connection) {
         this.connection = connection;
 
@@ -23,6 +24,10 @@ public class SandboxAPIServiceImpl implements SandboxAPIService{
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.connectTimeout(connection.connectionTimeoutSec,TimeUnit.SECONDS);
         builder.readTimeout(connection.readTimeoutSec, TimeUnit.SECONDS);
+
+        OkHttpClientBuilderExtensions.InjectHeader(builder,
+                "User-Agent", "Torque-Plugin-Bamboo/" + VersionUtils.PackageVersion);
+
         OkHttpClient client= builder.build();
 
         String baseUrl = String.format("%1$s",connection.address);
