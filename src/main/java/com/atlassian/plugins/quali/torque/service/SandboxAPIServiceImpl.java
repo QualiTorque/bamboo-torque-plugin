@@ -25,7 +25,7 @@ public class SandboxAPIServiceImpl implements SandboxAPIService{
         builder.connectTimeout(connection.connectionTimeoutSec,TimeUnit.SECONDS);
         builder.readTimeout(connection.readTimeoutSec, TimeUnit.SECONDS);
 
-        OkHttpClientBuilderExtensions.InjectHeader(builder,
+        OkHttpClientBuilderExtensions.injectHeader(builder,
                 "User-Agent", "Torque-Plugin-Bamboo/" + VersionUtils.PackageVersion);
 
         OkHttpClient client= builder.build();

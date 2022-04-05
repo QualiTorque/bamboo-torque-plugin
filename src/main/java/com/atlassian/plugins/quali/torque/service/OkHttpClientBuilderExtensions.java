@@ -7,7 +7,7 @@ import okhttp3.Request;
 import java.io.IOException;
 
 public class OkHttpClientBuilderExtensions {
-    public static void InjectHeader(OkHttpClient.Builder builder, String name, String value)
+    public static void injectHeader(OkHttpClient.Builder builder, String name, String value)
     {
         builder.addInterceptor(new Interceptor() {
             @Override

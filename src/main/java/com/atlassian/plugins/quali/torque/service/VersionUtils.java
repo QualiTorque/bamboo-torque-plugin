@@ -9,13 +9,13 @@ public class VersionUtils {
 
     static {
         try {
-            PackageVersion = GetPackageVersion();
+            PackageVersion = getPackageVersion();
         } catch (IOException e) {
             throw new RuntimeException("Error while initializing VersionUtils.", e);
         }
     }
 
-    private static String GetPackageVersion() throws IOException {
+    private static String getPackageVersion() throws IOException {
         Properties properties = new Properties();
         properties.load(VersionUtils.class.getClassLoader().getResourceAsStream("bamboo-torque-plugin.properties"));
         return properties.getProperty("package.version");
