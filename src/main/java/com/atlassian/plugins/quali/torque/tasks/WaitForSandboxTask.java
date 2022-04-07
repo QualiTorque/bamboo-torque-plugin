@@ -65,7 +65,7 @@ public class WaitForSandboxTask implements TaskType{
         try {
             jsonRes = waitForSandbox(spaceName, sandboxId, timeout, buildLogger);
         } catch (Exception e) {
-            throw new TaskException(String.format("Unable to complete a task. Details:\n%s", e.getMessage()));
+            throw new TaskException(String.format("Unable to complete a task. Details:\n%s", e.getMessage()), e);
         }
         setVariable(taskContext, varDetails, jsonRes);
         Map<String,List<String>> endpoints = getSandboxEndpoints(jsonRes, buildLogger);

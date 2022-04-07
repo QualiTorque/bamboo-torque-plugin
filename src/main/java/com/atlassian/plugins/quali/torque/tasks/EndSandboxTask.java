@@ -42,8 +42,8 @@ public class EndSandboxTask implements TaskType
             res = sandboxAPIService.deleteSandbox(spaceName, sandboxId);
         }
         catch (Exception e) {
-            buildLogger.addBuildLogEntry("Unable to stop sandbox");
-            throw new TaskException(e.getMessage());
+            buildLogger.addErrorLogEntry("Unable to stop sandbox", e);
+            throw new TaskException(e.getMessage(), e);
         }
 
         if(!res.isSuccessful())
