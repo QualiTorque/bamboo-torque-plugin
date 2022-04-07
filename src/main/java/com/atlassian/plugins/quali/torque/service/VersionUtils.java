@@ -5,11 +5,11 @@ import java.util.Properties;
 
 public class VersionUtils {
 
-    public static final String PackageVersion;
+    public static final String PACKAGE_VERSION;
 
     static {
         try {
-            PackageVersion = getPackageVersion();
+            PACKAGE_VERSION = getPackageVersion();
         } catch (IOException e) {
             throw new RuntimeException("Error while initializing VersionUtils.", e);
         }
