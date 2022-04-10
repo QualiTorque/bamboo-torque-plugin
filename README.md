@@ -4,7 +4,7 @@
 
 This README explains how to install, configure, and use the __bamboo-torque-plugin__.
 When a developer commits code to the source control repository, a new build is triggered and a new artifact is created.
-While testing, Torque provides on-demands sandbox environments integrating with test tools and storage
+While testing, Torque provides on-demand sandbox environments integrating with test tools and storage
 providers to pull the artifacts and push to Production.
 
 __Bamboo Torque Plugin__ integrates Torque into your Bamboo plan. You can use the available build tasks to create
@@ -28,7 +28,7 @@ a sandbox from any blueprint, start your tests and end the sandbox when finished
 3) Open __Torque Settings__.
 
 4) Fill in all fields.
-![Alt text](pics/bamboo-admin.png?raw=true)
+<br>![Alt text](pics/bamboo-admin.png?raw=true)
 
 ## Torque plan tasks
 
