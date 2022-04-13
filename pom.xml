@@ -9,8 +9,8 @@
         <name>Quali</name>
         <url>https://www.quali.com/</url>
     </organization>
-    <name>bamboo-torque-plugin</name>
-    <description>This is the com.atlassian.plugins.quali.torque:bamboo-torque-plugin plugin for Atlassian Bamboo.</description>
+    <name>Torque</name>
+    <description>This is the Torque plugin for Atlassian Bamboo. Streamline your CI/CD pipeline with Quali Torque sandboxes.</description>
     <packaging>atlassian-plugin</packaging>
     <properties>
         <bamboo.version>6.8.0</bamboo.version>
