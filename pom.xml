@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.quali.torque.plugins</groupId>
     <artifactId>bamboo-torque-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <organization>
         <name>Quali</name>
         <url>https://www.quali.com/</url>
