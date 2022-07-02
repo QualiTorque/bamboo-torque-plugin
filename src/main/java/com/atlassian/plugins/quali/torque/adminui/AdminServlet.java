@@ -2,10 +2,7 @@ package com.atlassian.plugins.quali.torque.adminui;
 
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
-import com.atlassian.plugins.quali.torque.api.ResponseData;
-import com.atlassian.plugins.quali.torque.service.SandboxServiceConnection;
-import com.atlassian.plugins.quali.torque.service.SandboxAPIService;
-import com.atlassian.plugins.quali.torque.service.SandboxAPIServiceImpl;
+import com.atlassian.plugins.quali.torque.service.VersionUtils;
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
@@ -13,7 +10,12 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
-import java.net.URI;
+import com.quali.torque.client.ApiClient;
+import com.quali.torque.client.ApiException;
+import com.quali.torque.client.Configuration;
+import com.quali.torque.client.api.SpaceApi;
+import com.quali.torque.client.models.QualiColonyGatewayApiSpaceSpaceListItemResponse;
+
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,7 +26,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Scanned
@@ -110,14 +114,16 @@ public class AdminServlet extends HttpServlet
         String address = req.getParameter(Const.ADDRESS).trim();
         String token = req.getParameter(Const.TOKEN).trim();
 
-        SandboxServiceConnection connection = new SandboxServiceConnection(address, token,
-                10,30);
-        SandboxAPIService sandboxApi = new SandboxAPIServiceImpl(connection);
-        final ResponseData<Object> res;
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+        defaultClient.setBasePath(address);
+        defaultClient.setUserAgent("Torque-Plugin-Bamboo/" + VersionUtils.PACKAGE_VERSION);
+        defaultClient.setApiKey(String.format("Bearer %s", token));
+        defaultClient.setConnectTimeout(60 * 1000);
+        SpaceApi spaceApi = new SpaceApi(defaultClient);
         // Check availability using getSpacesList call
         try {
-            res = sandboxApi.getSpacesList();
-            if (res.getStatusCode() == 200 ) {
+            try {
+                final List<QualiColonyGatewayApiSpaceSpaceListItemResponse> res = spaceApi.apiSpacesGet();
                 transactionTemplate.execute(new TransactionCallback() {
                     public Object doInTransaction() {
                         PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
@@ -130,9 +136,9 @@ public class AdminServlet extends HttpServlet
                 context.put(Const.GENERAL_MSG, "Connection saved");
                 context.put(Const.TORQUE_TOKEN_ERROR, "");
                 context.put(Const.ADDRESS_ERROR, "");
-            } else {
+            } catch (ApiException e) {
                 context.put(Const.GENERAL_ERROR, "Failed to save Torque connection. Check settings");
-                if (res.getStatusCode() == 401 || res.getStatusCode() == 403) {
+                if (e.getCode() == 401 || e.getCode() == 403) {
                     context.put(Const.TORQUE_TOKEN_ERROR, "Check token");
                 }
                 context.put(Const.ADDRESS_ERROR, "");
