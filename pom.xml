@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.quali.torque.plugins</groupId>
     <artifactId>bamboo-torque-plugin</artifactId>
-    <version>1.0.1</version>
+    <version>2.0.0</version>
     <organization>
         <name>Quali</name>
         <url>https://www.quali.com/</url>
@@ -25,6 +25,12 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>com.quali</groupId>
+            <artifactId>quali-torque-client</artifactId>
+            <version>0.2.5</version>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>com.atlassian.bamboo</groupId>
             <artifactId>atlassian-bamboo-web</artifactId>

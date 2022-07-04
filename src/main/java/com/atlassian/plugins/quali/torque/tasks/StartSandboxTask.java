@@ -6,16 +6,13 @@ import com.atlassian.bamboo.task.TaskContext;
 import com.atlassian.bamboo.task.TaskException;
 import com.atlassian.bamboo.task.TaskResult;
 import com.atlassian.bamboo.task.TaskResultBuilder;
-import com.atlassian.bamboo.task.TaskType;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.plugins.quali.torque.TorqueServerRetriever;
-import com.atlassian.plugins.quali.torque.api.CreateSandboxRequest;
-import com.atlassian.plugins.quali.torque.api.CreateSandboxResponse;
-import com.atlassian.plugins.quali.torque.api.ResponseData;
-import com.atlassian.plugins.quali.torque.service.SandboxAPIService;
-import com.atlassian.plugins.quali.torque.service.SandboxAPIServiceImpl;
-import com.atlassian.plugins.quali.torque.service.SandboxServiceConnection;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import com.quali.torque.client.ApiClient;
+import com.quali.torque.client.api.EnvironmentApi;
+ import com.quali.torque.client.models.QualiColonyGatewayApiModelRequestsCreateSandboxRequest;
+import com.quali.torque.client.models.QualiColonyGatewayApiModelResponsesCreateEnvResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,9 +26,9 @@ public class StartSandboxTask implements TaskType
         this.pluginSettingsFactory = pluginSettingsFactory;
     }
 
-    private SandboxAPIService createAPIService() {
-        SandboxServiceConnection serviceConnection = TorqueServerRetriever.getTorqueServerDetails(pluginSettingsFactory);
-        return new SandboxAPIServiceImpl(serviceConnection);
+    private EnvironmentApi createAPIService() {
+        ApiClient apiClient = TorqueServerRetriever.getTorqueServerDetails(pluginSettingsFactory);
+        return new EnvironmentApi(apiClient);
     }
 
     public static Map<String,String> parseParametersLine(String params) {
@@ -49,7 +46,7 @@ public class StartSandboxTask implements TaskType
     @Override
     public TaskResult execute(final TaskContext taskContext) throws TaskException {
         final BuildLogger buildLogger = taskContext.getBuildLogger();
-        final ResponseData<CreateSandboxResponse> res;
+        final QualiColonyGatewayApiModelResponsesCreateEnvResponse res;
         final Map<String, String> customBuildData = taskContext.getBuildContext().getBuildResult().getCustomBuildData();
         buildLogger.addBuildLogEntry("Task Start Sandbox started");
         final String spaceName = taskContext.getConfigurationMap().get("space");
@@ -59,20 +56,23 @@ public class StartSandboxTask implements TaskType
         final Map<String, String> artifacts = parseParametersLine(taskContext.getConfigurationMap().get("artifacts"));
         final Map<String, String> inputs = parseParametersLine(taskContext.getConfigurationMap().get("inputs"));
 
-        SandboxAPIService sandboxAPIService = createAPIService();
+        EnvironmentApi sandboxEnvironmentsApi = createAPIService();
         buildLogger.addBuildLogEntry(String.format("Passed parameters are %s , %s , %s", spaceName, blueprintName, sandboxName));
-        CreateSandboxRequest req = new CreateSandboxRequest(blueprintName, sandboxName, artifacts, true, inputs);
+        QualiColonyGatewayApiModelRequestsCreateSandboxRequest req = new QualiColonyGatewayApiModelRequestsCreateSandboxRequest();
+        req.setBlueprintName(blueprintName);
+        req.setSandboxName(sandboxName);
+        req.setArtifacts(artifacts);
+        req.setAutomation(true);
+        req.setInputs(inputs);
         try {
-            res = sandboxAPIService.createSandbox(spaceName, req);
+            res =sandboxEnvironmentsApi.apiSpacesSpaceNameEnvironmentsPost(spaceName, req);
         }
         catch (Exception e) {
             buildLogger.addErrorLogEntry("Unable to start sandbox", e);
             throw new TaskException(e.getMessage(), e);
         }
 
-        if(!res.isSuccessful())
-            throw new TaskException(String.format("status_code: %s error: %s", res.getStatusCode(), res.getError()));
-        String sandboxId = res.getData().id;
+        String sandboxId = res.getId();
 
         //final String say = taskContext.getConfigurationMap().get("say");
 

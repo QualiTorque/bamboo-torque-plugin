@@ -32,7 +32,7 @@ a sandbox from any blueprint, start your tests and end the sandbox when finished
 
 ## Torque plan tasks
 
-After installation you will have three tasks added to your Bamboo task list:
+After installation, you will have three tasks added to your Bamboo task list:
 
 - [Start Torque Sandbox](#start-torque-sandbox)
 - [Wait for Torque Sandbox](#wait-for-torque-sandbox)
@@ -59,7 +59,7 @@ The __Wait for Sandbox__ task is used to wait for the sandbox to become Active. 
 * Add the Wait For Torque Sandbox task.
 ![Alt text](pics/wait-task.png?raw=true)
 <br>* **Space** - enter a name for your Torque space.
-<br>* **Tiemeout** - Set the timeout for this step, if your sandbox will not be ready when the timeout is reached,
+<br>* **Timeout** - Set the timeout for this step, if your sandbox will not be ready when the timeout is reached,
  Bamboo will abort the deployment.
  
  If the active sandbox has quick links, they will be stored in the following bamboo variables:

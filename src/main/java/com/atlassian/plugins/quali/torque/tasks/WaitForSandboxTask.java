@@ -6,35 +6,41 @@ import com.atlassian.bamboo.task.TaskException;
 import com.atlassian.bamboo.task.TaskResult;
 import com.atlassian.bamboo.task.TaskResultBuilder;
 import com.atlassian.bamboo.task.TaskType;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.plugins.quali.torque.TorqueServerRetriever;
-import com.atlassian.plugins.quali.torque.api.*;
-import com.atlassian.plugins.quali.torque.service.SandboxAPIService;
-import com.atlassian.plugins.quali.torque.service.SandboxAPIServiceImpl;
-import com.atlassian.plugins.quali.torque.service.SandboxServiceConnection;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
-import com.google.gson.Gson;
 import com.atlassian.bamboo.variable.CustomVariableContext;
-import com.atlassian.bamboo.variable.substitutor.VariableSubstitutorFactory;
 import com.atlassian.bamboo.variable.VariableContext;
 import com.atlassian.bamboo.variable.VariableDefinitionContext;
+import com.google.gson.GsonBuilder;
+import com.quali.torque.client.ApiClient;
+import com.quali.torque.client.ApiException;
+import com.quali.torque.client.api.EnvironmentApi;
+import com.quali.torque.client.models.QualiColonyGatewayApiModelResponsesEnvironmentResponse;
+import com.quali.torque.client.models.QualiColonyServicesSandboxesApiContractsEnvironmentErrorResponse;
+import com.quali.torque.client.models.QualiColonyServicesSandboxesApiContractsEnvironmentGrainResponse;
+import com.quali.torque.client.models.QualiColonyServicesSandboxesApiContractsEnvironmentOutputResponse;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
-import org.json.*;
 
 @Scanned
 public class WaitForSandboxTask implements TaskType{
+
+    public static class SandboxStatus
+    {
+        public static final String LAUNCHING = "Launching";
+        public static final String ACTIVE = "Active";
+        public static final String ACTIVE_WITH_ERROR = "ActiveWithError";
+    }
+
     @ComponentImport
     private final PluginSettingsFactory pluginSettingsFactory;
 
-    private SandboxAPIService sandboxAPIService;
+    private final EnvironmentApi sandboxEnvironmentsApi;
     private String prevStatus = "";
 
     @ComponentImport
@@ -43,13 +49,13 @@ public class WaitForSandboxTask implements TaskType{
     public WaitForSandboxTask(@ComponentImport PluginSettingsFactory pluginSettingsFactory,
                               @ComponentImport CustomVariableContext customVariableContext) {
         this.pluginSettingsFactory = pluginSettingsFactory;
-        this.sandboxAPIService = createAPIService();
+        this.sandboxEnvironmentsApi = createAPIService();
         this.customVariableContext = customVariableContext;
     }
 
-    private SandboxAPIService createAPIService() {
-        SandboxServiceConnection serviceConnection = TorqueServerRetriever.getTorqueServerDetails(pluginSettingsFactory);
-        return new SandboxAPIServiceImpl(serviceConnection);
+    private EnvironmentApi createAPIService() {
+        ApiClient apiClient = TorqueServerRetriever.getTorqueServerDetails(pluginSettingsFactory);
+        return new EnvironmentApi(apiClient);
     }
 
     @Override
@@ -62,37 +68,35 @@ public class WaitForSandboxTask implements TaskType{
         final int timeout = Integer.parseInt(taskContext.getConfigurationMap().get("timeout"));
         final String varDetails = taskContext.getConfigurationMap().get("vardetails");
         buildLogger.addBuildLogEntry(String.format("Waiting for sandbox %s, time limit is %s minutes", sandboxId, timeout));
+        QualiColonyGatewayApiModelResponsesEnvironmentResponse environment;
         try {
-            jsonRes = waitForSandbox(spaceName, sandboxId, timeout, buildLogger);
+            environment = waitForSandbox(spaceName, sandboxId, timeout, buildLogger);
+            jsonRes = new GsonBuilder().setPrettyPrinting().create().toJson(environment);
         } catch (Exception e) {
             throw new TaskException(String.format("Unable to complete a task. Details:\n%s", e.getMessage()), e);
         }
         setVariable(taskContext, varDetails, jsonRes);
-        Map<String,List<String>> endpoints = getSandboxEndpoints(jsonRes, buildLogger);
-        for (Map.Entry<String,List<String>> ep : endpoints.entrySet()) {
-            for (int i = 0; i < ep.getValue().size(); i++) {
-                String appName = ep.getKey().replaceAll("-", "_");
-                setVariable(taskContext, String.format("%s_shortcut_%d", appName, i+1), ep.getValue().get(i));
-            }
+        Map<String, String> endpoints = getSandboxEndpoints(environment, buildLogger);
+        for (Map.Entry<String, String> ep : endpoints.entrySet()) {
+            String appName = ep.getKey().replaceAll("-", "_");
+            setVariable(taskContext, String.format("shortcut_%s", appName), ep.getValue());
         }
         return TaskResultBuilder.newBuilder(taskContext).success().build();
     }
 
-    private String waitForSandbox(String spaceName, String sandboxId, int timeoutMinutes, BuildLogger logger)
+    private QualiColonyGatewayApiModelResponsesEnvironmentResponse waitForSandbox(String spaceName, String sandboxId, int timeoutMinutes, BuildLogger logger)
             throws IOException, InterruptedException, TimeoutException, TaskException {
-        SingleSandbox sandboxData = null;
         long startTime = System.currentTimeMillis();
         while ((System.currentTimeMillis() - startTime) < timeoutMinutes * 1000 * 60)
         {
-            ResponseData<Object> sandbox = getSandbox(spaceName, sandboxId);
-            if(sandbox != null)
+            QualiColonyGatewayApiModelResponsesEnvironmentResponse environment = getSandbox(spaceName, sandboxId);
+            if(environment != null)
             {
-                sandboxData = new Gson().fromJson(sandbox.getRawBodyJson(), SingleSandbox.class);
-                if (!sandboxData.sandboxStatus.equals(this.prevStatus)) {
-                    prevStatus = sandboxData.sandboxStatus;
+                if (!environment.getDetails().getComputedStatus().equals(this.prevStatus)) {
+                    prevStatus = environment.getDetails().getComputedStatus();
                 }
-                if(waitForSandbox(sandboxData))
-                    return sandbox.getRawBodyJson();
+                if(waitForSandbox(environment))
+                    return environment;
             }
             logger.addBuildLogEntry("****");
             Thread.sleep(10000);
@@ -100,75 +104,72 @@ public class WaitForSandboxTask implements TaskType{
         throw new TimeoutException("Stopped by Timeout");
     }
 
-    private ResponseData<Object> getSandbox(String spaceName, String sandboxId) throws IOException, TaskException {
-        ResponseData<Object> sandboxByIdRes = sandboxAPIService.getSandboxById(spaceName, sandboxId);
-        if (!sandboxByIdRes.isSuccessful()){
-            for(int i=0; i<5; i++){
-                sandboxByIdRes = sandboxAPIService.getSandboxById(spaceName, sandboxId);
-                if (sandboxByIdRes.isSuccessful()){
-                    return sandboxByIdRes;
-                }
+    private QualiColonyGatewayApiModelResponsesEnvironmentResponse getSandbox(String spaceName, String sandboxId) throws TaskException {
+        ApiException apiException = null;
+        QualiColonyGatewayApiModelResponsesEnvironmentResponse sandboxByIdRes;
+
+        for (int i = 0; i < 5; i++) {
+            try {
+                sandboxByIdRes = sandboxEnvironmentsApi.apiSpacesSpaceNameEnvironmentsEnvironmentIdGet(spaceName, sandboxId);
+                return sandboxByIdRes;
+            } catch (ApiException e) {
+                apiException = e;
             }
-            throw new TaskException(String.format("failed after 5 retries. status_code: %s error: %s",
-                    sandboxByIdRes.getStatusCode(), sandboxByIdRes.getError()));
+
         }
-        return sandboxByIdRes;
+        throw new TaskException(String.format("failed after 5 retries. status_code: %s error: %s",
+                apiException.getCode(), apiException.getMessage()));
     }
 
-    private boolean waitForSandbox(SingleSandbox sandbox) throws IOException, TaskException  {
-        if(sandbox.sandboxStatus.equals(SandboxStatus.LAUNCHING))
+    private boolean waitForSandbox(QualiColonyGatewayApiModelResponsesEnvironmentResponse environment) throws IOException, TaskException  {
+        if(environment.getDetails().getComputedStatus().equals(SandboxStatus.LAUNCHING))
             return false;
-        if(sandbox.sandboxStatus.equals(SandboxStatus.ACTIVE))
+        if(environment.getDetails().getComputedStatus().equals(SandboxStatus.ACTIVE))
             return true;
-        if(sandbox.sandboxStatus.equals(SandboxStatus.ACTIVE_WITH_ERROR)) {
-            String app_statuses_str = formatAppsDeploymentStatuses(sandbox);
+        if(environment.getDetails().getComputedStatus().equals(SandboxStatus.ACTIVE_WITH_ERROR)) {
+            String app_statuses_str = formatAppsDeploymentStatuses(environment);
             throw new TaskException(String.format("Sandbox deployment failed with status %s, apps deployment statuses are: %s",
-                    sandbox.sandboxStatus, app_statuses_str));
+                    environment.getDetails().getComputedStatus(), app_statuses_str));
         }
 
         throw new TaskException(String.format("Sandbox with id %s has unknown sandbox status %s",
-                sandbox.id, sandbox.sandboxStatus));
+                environment.getDetails().getId(), environment.getDetails().getComputedStatus()));
     }
 
-    private Map<String,List<String>> getSandboxEndpoints(String jsonDef, BuildLogger logger) {
-        Map<String,List<String>> shortcuts = new HashMap<String, List<String>>();
-        JSONObject sbDef = new JSONObject(jsonDef);
-        JSONArray apps =  sbDef.getJSONArray("applications");
-        for (int i = 0; i < apps.length(); i++)
+    private Map<String, String> getSandboxEndpoints(QualiColonyGatewayApiModelResponsesEnvironmentResponse environment, BuildLogger logger) {
+        Map<String, String> sc = new HashMap<String, String>();
+        for (QualiColonyServicesSandboxesApiContractsEnvironmentOutputResponse output: environment.getDetails().getState().getOutputs())
         {
-            JSONObject app = apps.getJSONObject(i);
-            JSONArray links = app.getJSONArray("shortcuts");
-            List<String> sc = new ArrayList<String>();
-            for (int j = 0; j < links.length(); j++) {
-                logger.addBuildLogEntry(String.format("Shortcut %s found for app %s",
-                        links.getString(j), app.getString("name")));
-                sc.add(links.getString(j));
+            if (output.getKind() == "link") {
+                logger.addBuildLogEntry(String.format("Link output %s found: %s",
+                        output.getName(), output.getValue()));
+                sc.put(output.getName(), output.getValue());
             }
-            shortcuts.put(app.getString("name"), sc);
         }
-        return shortcuts;
+        return sc;
     }
 
-    private String formatAppsDeploymentStatuses(SingleSandbox sandbox)throws IOException{
+    private String formatAppsDeploymentStatuses(QualiColonyGatewayApiModelResponsesEnvironmentResponse environment)throws IOException{
         StringBuilder builder = new StringBuilder();
         boolean isFirst = true;
-        for (Service service:sandbox.applications){
+        for (QualiColonyServicesSandboxesApiContractsEnvironmentGrainResponse grain:environment.getDetails().getState().getGrains()){
             if (isFirst)
                 isFirst= false;
             else
                 builder.append(", ");
-            builder.append(String.format("%s: %s", service.name, service.status));
+            builder.append(String.format("%s: %s", grain.getName(),
+                    grain.getState().getCurrentState()));
         }
-        if (!sandbox.sandboxErrors.isEmpty()) {
+        if (!environment.getDetails().getState().getErrors().isEmpty()) {
             builder.append(System.getProperty("line.separator"));
             builder.append("Sandbox Errors: ");
-            for (SandboxErrorService service : sandbox.sandboxErrors) {
+            for (QualiColonyServicesSandboxesApiContractsEnvironmentErrorResponse error : environment.getDetails().getState().getErrors()) {
                 if (isFirst)
                     isFirst = false;
                 else
                     builder.append(", ");
 
-                builder.append(String.format("%s: %s", service.time, service.code, service.message));
+                builder.append(String.format("%s", error.getMessage()));
             }
         }
         return builder.toString();
